@@ -32,42 +32,41 @@ export interface Review{
     created_at: string,
     updated_at: string
 }
-export interface UrlData{
+export interface IdParam{
     id : number 
 }
-export interface AddCategoryData{
+export interface CreateCategoryRequest{
     name: string,
     parent_id: number,
 }
-export interface CompareData{
+export interface CompareProductsRequest{
     id: number,
     id2: number
 }
-export interface AddCategoryResponse{
+export interface CreateCategoryResponse{
     message: string,
     category : Category
 }
-export interface Categories{
+export interface CategoriesListResponse{
     categories: Category[]
 }
-export interface ProductResponse{
+export interface ProductsListResponse{
     message: string,
     Products?: Product[]
-
 }
-export interface PageRequest{
-    page?: string,
+export interface PaginationRequest{
+    page?: number,
     search?: string,
 }
-export interface UpdCatDatas{
+export interface UpdateCategoryRequest{
     id: number,
     name: string,
     parent_id: number
 }
-export interface AddFavorites{
+export interface AddFavoriteRequest{
     id: number
 }
-export interface Favorites{
+export interface FavoritesListResponse{
     message: string,
     favourites: Favorite[]
 }
@@ -150,49 +149,49 @@ export interface ProductDetail{
     
   }
 }
-export interface GetProdResponse{
+export interface ProductDetailResponse{
     message: string,
     Product: ProductDetail,
 }
-export interface UpdateData{
+export interface UpdateProductRequest{
     id : number,
     name: string,
     image_url: string,
     brand_id: number,
     category_id: number,
 }
-export interface UpdateResponse{
+export interface UpdateProductResponse{
     message: string,
     data?: Product
 }
-export interface ReviewData{
+export interface CreateReviewRequest{
     product_id : number,
     content : string,
     rating: number
 }
-export interface AdminRevData{
+export interface UpdateReviewStatusRequest{
     id: number,
     status: number 
 }
-export interface ResponseData{
+export interface ReviewsListResponse{
     message : string,
     Reviews? : Review[],
 }
-export interface GetReviewResult{
+export interface ReviewDetailResponse{
     message: string,
     Review? : Review[]
 }
-export interface UpdateReviewData{
+export interface UpdateReviewRequest{
     id : number,
     product_id: number,
     content: string,
     rating: number
 }
-export interface LoginData{
+export interface LoginRequest{
     email : string,
     password : string,
 }
-export interface ProfileResponse{
+export interface UserProfileResponse{
     message: string,
     user?: {
         id: number,
@@ -203,7 +202,7 @@ export interface ProfileResponse{
         gender: number,
     }
 }
-export interface RegisterData{
+export interface RegisterRequest{
     name : string,
     surname: string,
     email: string,
@@ -213,9 +212,9 @@ export interface RegisterData{
 }
 export interface RegisterResponse{
     message : string,
-    data : RegisterData,
+    data : RegisterRequest,
 }
-export interface UpdateData{
+export interface UpdateUserRequest{
     email : string,
     name : string,
     surname : string,
@@ -223,7 +222,7 @@ export interface UpdateData{
     gender: number,
 }
 
-export interface UpdateResponse{
+export interface UpdateUserResponse{
     message : string,
     user?:{
         email: string,
