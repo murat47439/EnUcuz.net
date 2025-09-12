@@ -4,6 +4,7 @@ interface ButtonProbs extends React.ButtonHTMLAttributes<HTMLButtonElement>{
     children: React.ReactNode
     variant?: 'primary' | 'secondary'
     className?: string
+    label?: string
 }
 
 const Button=({children, variant = 'primary',className = '', ...rest}: ButtonProbs) =>{

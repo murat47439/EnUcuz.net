@@ -1,9 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Search } from "lucide-react";
-import { getProducts } from "@/lib/api/products/useGetProducts";
-import { PaginationRequest } from "@/lib/types/types";
-import { ProductsListResponse } from "@/lib/types/types";
+
 
 
 interface SearchBarProbs{

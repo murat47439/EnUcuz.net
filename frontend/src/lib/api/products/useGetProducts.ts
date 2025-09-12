@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { api } from "../apiClient";
 import { PaginationRequest, ProductsListResponse } from "@/lib/types/types";
 
@@ -9,8 +10,9 @@ export async function getProducts(data: PaginationRequest) {
         
         const res = await api.get<ProductsListResponse>(`/products?${params}`)
         return res.data
-    }catch(err: any){
-        throw new Error(err?.response?.data?.message || "Ürünler bulunamadı")
+    }catch(err: unknown){
+        const error = err as AxiosError<{ message: string }>;
+        throw new Error(error?.response?.data?.message || "Ürünler bulunamadı")
     }
 }
 

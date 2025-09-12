@@ -1,6 +1,6 @@
 import axios,{AxiosRequestConfig} from "axios";
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-console.log("API_BASE_URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+console.log("✅ BUILD API URL:", API_BASE_URL); // build sırasında gözükmeli
 
 export interface AxiosRequestConfigWithRetry extends AxiosRequestConfig {
   _retry?: boolean;
