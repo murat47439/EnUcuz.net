@@ -4,22 +4,13 @@ import { notFound } from "next/navigation";
 import { IdParam } from "@/lib/types/types";
 
 
-// ✅ Statik export için gerekli
-export async function generateStaticParams() {
-  // Burada ürün id'lerini API'den çekiyoruz
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/products/id`);
-  const products = await res.json();
-
-  return products.map((product: { id: number }) => ({
-    id: product.id.toString(), // string dönmek zorunda!
-  }));
-}
 export default async function ProductDetailPage({params} : {params : {id : number}}) {
     const request: IdParam = {
         id: params.id
     }
 
     const product = await getProduct(request)
+    console.log(product)
     if(!product){
         notFound()
     }

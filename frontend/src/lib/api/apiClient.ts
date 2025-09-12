@@ -1,6 +1,5 @@
-import axios,{AxiosRequestConfig} from "axios";
+import axios,{AxiosRequestConfig, AxiosError} from "axios";
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-console.log("✅ BUILD API URL:", API_BASE_URL); // build sırasında gözükmeli
 
 export interface AxiosRequestConfigWithRetry extends AxiosRequestConfig {
   _retry?: boolean;
@@ -23,9 +22,11 @@ api.interceptors.response.use(
       try{
         await api.post("/refresh");
         return api(originalRequest);
-      }catch(err){
+      }catch(err: unknown){
         window.location.href = "/login";
-        return Promise.reject(new Error("Oturum süresi doldu. Lütfen giriş yapın."))
+        const error = err as AxiosError<{ message: string }>;
+        
+        return Promise.reject(new Error(error?.response?.data?.message || "Oturum süresi doldu. Lütfen giriş yapın."))
       }
     }
 
