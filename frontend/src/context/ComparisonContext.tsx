@@ -40,7 +40,7 @@ export const ComparisonProvider = ({children} : ComparisonProviderProbs) => {
         }
     }
     
-    const removeProduct = (productId: Number) => {
+    const removeProduct = (productId: number) => {
         setComparisonList(prevlist => prevlist.filter(p => p.Product.id !== productId));
     }
     const removeAll = () => {
