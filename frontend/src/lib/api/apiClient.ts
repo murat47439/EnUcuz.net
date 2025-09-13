@@ -8,7 +8,7 @@ export interface AxiosRequestConfigWithRetry extends AxiosRequestConfig {
 export const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
-  timeout: 10000,
+  timeout: 30000,
 });
 
 api.interceptors.response.use(

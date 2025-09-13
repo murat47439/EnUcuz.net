@@ -3,11 +3,23 @@ import Button from "../button";
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useComparison } from "@/context/ComparisonContext";
 
 interface ProductCardProbs{
   product: Product
 }
 const ProductCard = ({product}: ProductCardProbs) =>{
+  const {addProduct,removeProduct,comparisonList} = useComparison();
+
+  const isAdded = comparisonList.some(p=> p.Product.id === product.id)
+
+  const handleCompareClick = () => {
+    if (isAdded){
+      removeProduct(product.id)
+    }else{
+      addProduct(product)
+    }
+  }
   return(
     <div className="border rounded-lg shadow-md flex flex-col transition-transform duration-300 hover:scale-105">
       <div className="relative w-full h-48">
@@ -19,7 +31,7 @@ const ProductCard = ({product}: ProductCardProbs) =>{
           <Link href={`/product/${product.id}`} className="w-full" >
           <Button variant="secondary">Detaylar</Button>
           </Link>
-          <Button variant="primary">Karşılaştır</Button>
+          <Button variant="primary" onClick={handleCompareClick}>Karşılaştır</Button>
         </div>
       </div>
     </div>

@@ -10,7 +10,6 @@ export default async function ProductDetailPage({params} : {params : {id : numbe
     }
 
     const product = await getProduct(request)
-    console.log(product)
     if(!product){
         notFound()
     }

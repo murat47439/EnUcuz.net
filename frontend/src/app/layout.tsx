@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ComparisonProvider } from "@/context/ComparisonContext";
+import ComparisonBar from "@/features/auth/components/compare/useCompareBar";
 import "./globals.css";
 import "../styles/globals.css";
 
@@ -28,7 +30,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ComparisonProvider>
+          <main>{children}</main>
+
+
+          <ComparisonBar></ComparisonBar>
+        </ComparisonProvider>
+        
       </body>
     </html>
   );

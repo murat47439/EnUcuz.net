@@ -35,10 +35,9 @@ export default function HomePage() {
 
   return (
     <main className="container mx-auto p-4 md:p-8">
-      <h1 className="text-3xl md:test-4xl font-bold mb-4 text-center">Ürün Karşılaştır</h1>
+      <h1 className="text-3xl md:test-4xl font-bold mb-4 text-center">Cihaz Karşılaştır</h1>
       <p className="text-center text-gray-600 mb-8">Aradığınız ürünü bulun ve karşılaştırın</p>
       <SearchBar onSearchSubmit={handleSearchSubmit} />
-      <h2 className="text-2xl font-bold mb-6 mt-4">Ürünler</h2>
       { products?.length >0 ?(
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {products?.map((product)=> (
@@ -46,7 +45,7 @@ export default function HomePage() {
         ))}  
       </div>  
       ):(
-        <p>Arama kriterlerinize uygun ürün bulunamadı.</p>
+        <p className="text-center border rounded-2xl p-4">Arama kriterlerinize uygun ürün bulunamadı.</p>
       )
     }
     </main>
