@@ -151,7 +151,7 @@ const ComparisonTable = ({products}: ComparisonTableProbs) => {
                         <td className="bg-amber-200 p-2 w-32 sm:w-48 md:w-56 lg:w-64 xl:w-72 text-center">
                             Ana kamera Özellikleri
                         </td>
-                        <td className="p-2 w-96 text-center">
+                        <td className="p-2 w-96 text-center ">
                                 {products[0].Product.cameras.mainCamera.features}
                         </td>
                         <td className="p-2 w-96 text-center">

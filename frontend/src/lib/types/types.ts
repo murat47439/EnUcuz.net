@@ -72,82 +72,110 @@ export interface FavoritesListResponse{
 }
 export interface ProductDetail{    
 
-    id: number,
-    name: string,
-    brand: {
-      id: number,
-      name: string
-    },
-    battery: {
-      type: string,
-      charging: string[]
-    },
-    platform: {
-      os: string,
-      chipset: string,
-      cpu: string,
-      gpu: string
-    },
-    network: {
-      technology: string,
-      speed: string,
-      "2g": string,
-      "3g": string,
-      "4g": string,
-      "5g": string
-    },
-    display: {
-      type: string,
-      size: string,
-      resolution: string,
-      protection: string
-    },
-    launch: {
-      announced: string | null ,
-      released: string | null,
-      status: string
-    },
-    body: {
-      dimensions: string,
-      weight: string,
-      build: string,
-      sim: string
-    },
-    memory: {
-      cardSlot: string,
-      internal: string
-    },
-    sound: {
-      loudspeaker: string
-    },
-    comms: {
-      wlan: string,
-      bluetooth: string,
-      positioning: string,
-      nfc: string,
-      radio: string,
-      usb: string
-    },
-    features: {
-      sensors: string
-    },
-    colors: string[],
-    models: string[],
-    cameras: {
-      mainCamera: {
-        type: string,
-        cameraSpecs: string[],
-        features: string[],
-        video: string[]
-      },
-      selfieCamera: {
-        type: string,
-        cameraSpecs: string[],
-        features: string[],
-        video: string[]
-      }
     
-  }
+        product: {
+            id: number,
+            name:string,
+            brand_name: string,
+            brand_id: number,
+            image_url: string,
+            category_id: number,
+            category_name: string
+        },
+        phone_detail: {
+            current_os: string,
+            upgradable_to: string,
+            chipset: string,
+            cpu: string,
+            gpu: string,
+            dimensions: string,
+            weight:string,
+            build: string,
+            sim_info: string,
+            network_technology: string,
+            network_speed: string,
+            "5g": string,
+            "4g": string,
+            "3g": string,
+            "2g": string,
+            gps: string,
+            nfc: string,
+            radio: string,
+            wlan: string,
+            bluetooth: string,
+            usb: string,
+            card_slot: string
+        },
+        battery: {
+            technology: string,
+            capacity: string,
+            charging: string
+        },
+        display: {
+            type: string,
+            size: string,
+            resolution: string,
+            aspect_ratio: string,
+            hdr: string,
+            refreshRate:string ,
+            ppi: string,
+            brightness_typical: {
+                String: string,
+                Valid: string
+            },
+            brightness_hbm: {
+                String: string,
+                Valid: string
+            },
+            protection: string
+        },
+        memory: MemorySpec[],
+        sound: {
+            loudspeaker: string,
+            features: string
+        },
+        features: {
+            sensors: string
+        },
+        colors_tr: string[],
+        models: string[],
+        cameras: Cameras
+        
+    }
+
+
+interface Lens {
+  type?: string;
+  megapixels?: string;
+  aperture?: string;
+  focal_length?: string;
+  sensor_size?: string;
+  pixel_size?: string;
+  zoom?: string;
+  other_features?: string[];
+}
+
+interface CameraFeature {
+  spec: string;
+}
+
+interface CameraVideo {
+  video: string;
+}
+
+interface CameraSpec {
+  lenses: Lens[];
+  features: CameraFeature[];
+  video: CameraVideo[];
+}
+
+interface Cameras {
+  mainCamera: CameraSpec;
+  selfieCamera: CameraSpec;
+}
+interface MemorySpec {
+    storege:string,
+    ram:string
 }
 export interface ProductDetailResponse{
     message: string,
