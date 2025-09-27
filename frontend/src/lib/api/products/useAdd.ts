@@ -1,10 +1,10 @@
 import { AxiosError } from "axios";
 import { api } from "../apiClient";
-import { Message, ProductDetail } from "@/lib/types/types";
+import { Message, Product } from "@/lib/types/types";
 
-export async function addProduct(data: ProductDetail) {
+export async function addProduct(data: Product) {
     try{
-      const res = await api.post<Message>("/admin/products", data);
+      const res = await api.post<Message>("/products/transactions", data);
       return res.data
     }catch(err: unknown){ 
       const error = err as AxiosError<{ message: string }>;

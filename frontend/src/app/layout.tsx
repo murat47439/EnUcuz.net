@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ComparisonProvider } from "@/context/ComparisonContext";
-import Header from "@/features/auth/components/header";
-import ComparisonBar from "@/features/auth/components/compare/useCompareBar";
+import { AuthProvider } from "@/context/authContext";
+import Header from "@/features/components/header";
+
 import "./globals.css";
 import "../styles/globals.css";
 
@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "EnUcuz-Net",
-  description: "Cihaz Karşılaştırma Sitesi",
+  description: "2. El Ürün Sitesi",
 };
 
 export default function RootLayout({
@@ -31,14 +31,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <AuthProvider>
         <Header></Header>
-        <ComparisonProvider>
+        
           <main className="pt-28">{children}</main>
 
 
-          <ComparisonBar></ComparisonBar>
-        </ComparisonProvider>
-        
+
+        </AuthProvider>
       </body>
     </html>
   );

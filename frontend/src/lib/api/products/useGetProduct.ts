@@ -1,11 +1,11 @@
 
 import { AxiosError } from "axios";
 import { api } from "../apiClient";
-import { IdParam, ProductDetailResponse } from "@/lib/types/types";
+import { IdParam, ProductDetail, ProductDetailResponse } from "@/lib/types/types";
 
-export async function getProduct(data: IdParam): Promise<ProductDetailResponse> {
+export async function getProduct(data: IdParam): Promise<ProductDetail> {
     try{
-        const res = await api.get<ProductDetailResponse>(`/products/${data.id}`)
+        const res = await api.get<ProductDetail>(`/products/${data.id}`)
         return res.data
     }catch(err: unknown){
         const error = err as AxiosError<{ message: string }>;

@@ -1,3 +1,5 @@
+
+
 export interface Message{
     message : string,
 }
@@ -15,14 +17,60 @@ export interface Favorite{
     deleted_at : string
 }
 export interface Product{
+    id?: number,
+    name:string,
+    description:string,
+    stock:number,
+    price: number,
+    brand_name?: string,
+    brand_id: number,
+    seller_id?: number,
+    seller_name?: string,
+    seller_phone?: string,
+
+    image_url: string,
+    category_id: number,
+    category_name?: string,
+    status?: number,
+    created_at?: { Time: string; Valid: boolean; };
+    updated_at?: { Time: string; Valid: boolean; };
+}
+export interface Brand{
     id: number,
     name: string,
-    image_url: string,
-    brand_id: number,
-    category_id: number,
-    created_at: string,
-    updated_at: string
+    deleted_at: string,
+    created_at: string
 }
+export interface Brands{
+    brands: Brand[]
+}
+export interface Chat{
+    id: number,
+    sender: number,
+    recipient: number,
+    channel_id: number,
+    product_id: number
+}
+export interface Chats{
+    chats: Chat[]
+}
+export interface ChatResponse{
+    chat: Chat,
+    message: string
+}
+export interface ChatMessage{
+    id: number,
+    chat_id: number,
+    content: string,
+    sender: number
+}
+export interface ChatMessages{
+    messages: ChatMessage[]
+}
+export interface NewChat{
+    chat: Chat,
+    message: ChatMessage,
+} 
 export interface Review{
     id: number,
     user_id: number,
@@ -57,6 +105,8 @@ export interface ProductsListResponse{
 export interface PaginationRequest{
     page?: number,
     search?: string,
+    brand?:number,
+    category?:number,
 }
 export interface UpdateCategoryRequest{
     id: number,
@@ -71,111 +121,17 @@ export interface FavoritesListResponse{
     favourites: Favorite[]
 }
 export interface ProductDetail{    
+Product: Product,
+Attribute: Attribute[]
 
-    
-        product: {
-            id: number,
-            name:string,
-            brand_name: string,
-            brand_id: number,
-            image_url: string,
-            category_id: number,
-            category_name: string
-        },
-        phone_detail: {
-            current_os: string,
-            upgradable_to: string,
-            chipset: string,
-            cpu: string,
-            gpu: string,
-            dimensions: string,
-            weight:string,
-            build: string,
-            sim_info: string,
-            network_technology: string,
-            network_speed: string,
-            "5g": string,
-            "4g": string,
-            "3g": string,
-            "2g": string,
-            gps: string,
-            nfc: string,
-            radio: string,
-            wlan: string,
-            bluetooth: string,
-            usb: string,
-            card_slot: string
-        },
-        battery: {
-            technology: string,
-            capacity: string,
-            charging: string
-        },
-        display: {
-            type: string,
-            size: string,
-            resolution: string,
-            aspect_ratio: string,
-            hdr: string,
-            refreshRate:string ,
-            ppi: string,
-            brightness_typical: {
-                String: string,
-                Valid: string
-            },
-            brightness_hbm: {
-                String: string,
-                Valid: string
-            },
-            protection: string
-        },
-        memory: MemorySpec[],
-        sound: {
-            loudspeaker: string,
-            features: string
-        },
-        features: {
-            sensors: string
-        },
-        colors_tr: string[],
-        models: string[],
-        cameras: Cameras
-        
     }
 
-
-interface Lens {
-  type?: string;
-  megapixels?: string;
-  aperture?: string;
-  focal_length?: string;
-  sensor_size?: string;
-  pixel_size?: string;
-  zoom?: string;
-  other_features?: string[];
-}
-
-interface CameraFeature {
-  spec: string;
-}
-
-interface CameraVideo {
-  video: string;
-}
-
-interface CameraSpec {
-  lenses: Lens[];
-  features: CameraFeature[];
-  video: CameraVideo[];
-}
-
-interface Cameras {
-  mainCamera: CameraSpec;
-  selfieCamera: CameraSpec;
-}
-interface MemorySpec {
-    storege:string,
-    ram:string
+export interface Attribute{
+    id: number,
+    attribute_id:number,
+    attribute_name: string,
+    product_id:number,
+    value: string,
 }
 export interface ProductDetailResponse{
     message: string,
@@ -222,12 +178,12 @@ export interface LoginRequest{
 export interface UserProfileResponse{
     message: string,
     user?: {
-        id: number,
-        email: string,
-        phone: string,
-        name: string,
-        surname: string,
-        gender: number,
+id: number,
+email: string,
+phone: string,
+name: string,
+surname: string,
+gender: number,
     }
 }
 export interface RegisterRequest{
@@ -235,8 +191,7 @@ export interface RegisterRequest{
     surname: string,
     email: string,
     phone: string,
-    password: string,
-    gender: number,
+    password: string
 }
 export interface RegisterResponse{
     message : string,
@@ -253,10 +208,10 @@ export interface UpdateUserRequest{
 export interface UpdateUserResponse{
     message : string,
     user?:{
-        email: string,
-        id : number,
-        name: string,
-        phone: string,
-        surname: string,
+email: string,
+id : number,
+name: string,
+phone: string,
+surname: string,
     }
 }
