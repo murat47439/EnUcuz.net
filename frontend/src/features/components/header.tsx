@@ -20,7 +20,7 @@ const Header: React.FC = () => {
             <div className="ml-auto">
             
             {!user ? (
-                <Link href="login">
+                <Link href="/login">
                     <Button variant="primary" className="h-10 w-full px-8">Giriş yap</Button>
                 </Link>
 
@@ -34,12 +34,12 @@ const Header: React.FC = () => {
                 {open && (
                     <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
                 <ul className="flex flex-col text-gray-700 select-none text-sm">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer "><Link href="/profile/new-product" className="flex items-center gap-2"><LucidePlusCircle size={20} />Yeni İlan Ver</Link></li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer "><Link href="/profile" className="flex items-center gap-2"><UserRound size={20}/>Hesabım</Link></li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer "><Link href="/profile/favories" className="flex items-center gap-2"><Heart size={20}/>Favoriler</Link></li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer "><Link href="/profile/new-product" onClick={() =>setOpen(false)} className="flex items-center gap-2"><LucidePlusCircle size={20} />Yeni İlan Ver</Link></li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer "><Link href="/profile" onClick={() =>setOpen(false)} className="flex items-center gap-2"><UserRound size={20}/>Hesabım</Link></li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer "><Link href="/profile/favories" onClick={() =>setOpen(false)} className="flex items-center gap-2"><Heart size={20}/>Favoriler</Link></li>
 
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"><Link href="/profile/products" className="flex items-center gap-2"><PackageIcon size={20} />Ürünlerim</Link></li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"><Link href="/profile/messages" className="flex items-center gap-2"><MessageSquare size={20} />Mesajlarım</Link></li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"><Link href="/profile/products" onClick={() =>setOpen(false)} className="flex items-center gap-2"><PackageIcon size={20} />Ürünlerim</Link></li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"><Link href="/profile/messages" onClick={() =>setOpen(false)} className="flex items-center gap-2"><MessageSquare size={20} />Mesajlarım</Link></li>
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer "><button className="bg-white text-gray-700 hover:bg-white border-none flex items-center gap-2 cursor-pointer" onClick={logout}><LogOut size={20} />Çıkış yap</button></li>
                 </ul>
                 </div>
