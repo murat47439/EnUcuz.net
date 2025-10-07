@@ -1,5 +1,5 @@
 "use client"
-
+export const dynamic = "force-dynamic"
 import { useState, useEffect, Suspense } from "react"
 import ProductCard from "@/features/components/productCard"
 import SearchBar from "@/features/components/searchbar"
