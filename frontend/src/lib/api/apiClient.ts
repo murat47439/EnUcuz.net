@@ -3,6 +3,7 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export interface AxiosRequestConfigWithRetry extends AxiosRequestConfig {
   _retry?: boolean;
+  _retryCount?: number;
 }
 
 export const api = axios.create({
@@ -16,9 +17,9 @@ api.interceptors.response.use(
   async error => {
     const originalRequest = error.config as AxiosRequestConfigWithRetry;
 
-    if (error.response?.status === 401 && !originalRequest._retry){
+    if (error.response?.status === 401 && (!originalRequest._retry || (originalRequest._retryCount || 0) < 1)){
       originalRequest._retry = true
-
+      originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
       try{
         await api.post("/refresh");
         return api(originalRequest);

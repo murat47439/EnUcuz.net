@@ -8,11 +8,11 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     return (
-        <div className="grid grid-rows-1 border border-black rounded-2xl p-4">
+        <div className="flex flex-col border border-black rounded-2xl p-4 h-full">
             <div className="flex justify-center items-center w-full h-full">
                 <Image
-                src={product.image_url}
-                alt={product.name}
+                src={product?.image_url || "/placeholder.png"}
+                alt={product?.name}
                 width={150}
                 height={100}
                 className="rounded-lg object-cover"
@@ -21,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <p className="font-bold text-black mt-2">{product.name}</p><br></br>
             <div className="flex justify-between w-full">
                 <p className="font-bold text-blue-500 mt-1">
-                {product.price ? product.price + " ₺" : "Fiyat bilgisi yok"}
+                {product.price ? String(product.price / 100 ) + " ₺" : "Fiyat bilgisi yok"}
                 </p>
                 <p className="font-bold text-black">{product.seller_name}</p>
             </div>

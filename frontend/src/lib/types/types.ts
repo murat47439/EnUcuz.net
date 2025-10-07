@@ -1,7 +1,9 @@
 
 
 export interface Message{
-    message : string,
+    success: boolean,
+    message: string,
+    data?: any,
 }
 export interface Category{
     id : number,
@@ -16,6 +18,11 @@ export interface Favorite{
     created_at:string,
     deleted_at : string
 }
+export type Features = { key: FeatureKey; value: string; }[];
+export type FeatureKey = {
+    label : string,
+     value: number
+}
 export interface Product{
     id?: number,
     name:string,
@@ -27,7 +34,7 @@ export interface Product{
     seller_id?: number,
     seller_name?: string,
     seller_phone?: string,
-
+    features?: Features,
     image_url: string,
     category_id: number,
     category_name?: string,
@@ -42,7 +49,15 @@ export interface Brand{
     created_at: string
 }
 export interface Brands{
-    brands: Brand[]
+    success: boolean,
+    message: string,
+    data: {
+        brands: Brand[],
+        pagination?: {
+            page: number,
+            search?: string,
+        }
+    }
 }
 export interface Chat{
     id: number,
@@ -52,11 +67,22 @@ export interface Chat{
     product_id: number
 }
 export interface Chats{
-    chats: Chat[]
+    success: boolean,
+    message: string,
+    data: {
+        chats: Chat[],
+        pagination?: {
+            page: number,
+        }
+    }
 }
 export interface ChatResponse{
-    chat: Chat,
-    message: string
+    success: boolean,
+    message: string,
+    data: {
+        chat: Chat,
+        message: string
+    }
 }
 export interface ChatMessage{
     id: number,
@@ -65,7 +91,11 @@ export interface ChatMessage{
     sender: number
 }
 export interface ChatMessages{
-    messages: ChatMessage[]
+    success: boolean,
+    message: string,
+    data: {
+        messages: ChatMessage[]
+    }
 }
 export interface NewChat{
     chat: Chat,
@@ -92,15 +122,35 @@ export interface CompareProductsRequest{
     id2: number
 }
 export interface CreateCategoryResponse{
+    success: boolean,
     message: string,
-    category : Category
+    data: {
+        category: Category
+    }
 }
 export interface CategoriesListResponse{
-    categories: Category[]
+    success: boolean,
+    message: string,
+    data: {
+        categories: Category[],
+        pagination?: {
+            page: number,
+            search?: string,
+        }
+    }
 }
 export interface ProductsListResponse{
+    success: boolean,
     message: string,
-    Products?: Product[]
+    data: {
+        products: Product[],
+        pagination?: {
+            page: number,
+            search?: string,
+            brand?: number,
+            category?: number,
+        }
+    }
 }
 export interface PaginationRequest{
     page?: number,
@@ -117,25 +167,74 @@ export interface AddFavoriteRequest{
     id: number
 }
 export interface FavoritesListResponse{
+    success: boolean,
     message: string,
-    favourites: Favorite[]
+    data: {
+        favourites: Favorite[],
+        pagination?: {
+            page: number,
+        }
+    }
 }
 export interface ProductDetail{    
-Product: Product,
-Attribute: Attribute[]
-
+data: {Product: Product,
+Attribute: ProductAttribute[]
+}
     }
 
 export interface Attribute{
+    id: number,
+    name: string,
+}
+export interface AddAttributeRes{
+    success: boolean,
+    message: string,
+    data: {
+        attribute: Attribute
+    }
+}
+export interface AddProdAttribute{
+    product: Product,
+    category_attribute: CategoryAttribute,
+    Value: string,
+}
+export interface ProdAttributeRes{
+    success: boolean,
+    message: string,
+    data: {
+        attribute: ProductAttribute
+    }
+}
+export interface ProductAttribute{
     id: number,
     attribute_id:number,
     attribute_name: string,
     product_id:number,
     value: string,
 }
-export interface ProductDetailResponse{
+export interface CategoryAttribute{
+    category_id: number,
+    category_name: string,
+    attribute_id: number,
+    attribute_name: string,
+    allow_custom: boolean,
+    required: boolean,
+    varianter: boolean,
+    slicer: boolean,
+}
+export interface CategoryAttributeRes{
+    success: boolean,
     message: string,
-    Product: ProductDetail,
+    data: {
+        category_attributes: CategoryAttribute[]
+    }
+}
+export interface ProductDetailResponse{
+    success: boolean,
+    message: string,
+    data: {
+        product: ProductDetail,
+    }
 }
 export interface UpdateProductRequest{
     id : number,
@@ -145,8 +244,11 @@ export interface UpdateProductRequest{
     category_id: number,
 }
 export interface UpdateProductResponse{
+    success: boolean,
     message: string,
-    data?: Product
+    data: {
+        product: Product
+    }
 }
 export interface CreateReviewRequest{
     product_id : number,
@@ -158,12 +260,22 @@ export interface UpdateReviewStatusRequest{
     status: number 
 }
 export interface ReviewsListResponse{
-    message : string,
-    Reviews? : Review[],
+    success: boolean,
+    message: string,
+    data: {
+        reviews: Review[],
+        pagination?: {
+            page: number,
+            product_id?: number,
+        }
+    }
 }
 export interface ReviewDetailResponse{
+    success: boolean,
     message: string,
-    Review? : Review[]
+    data: {
+        review: Review
+    }
 }
 export interface UpdateReviewRequest{
     id : number,
@@ -176,14 +288,17 @@ export interface LoginRequest{
     password : string,
 }
 export interface UserProfileResponse{
+    success: boolean,
     message: string,
-    user?: {
-id: number,
-email: string,
-phone: string,
-name: string,
-surname: string,
-gender: number,
+    data: {
+        user: {
+            id: number,
+            email: string,
+            phone: string,
+            name: string,
+            surname: string,
+            gender: number,
+        }
     }
 }
 export interface RegisterRequest{
@@ -194,8 +309,9 @@ export interface RegisterRequest{
     password: string
 }
 export interface RegisterResponse{
-    message : string,
-    data : RegisterRequest,
+    success: boolean,
+    message: string,
+    data?: any
 }
 export interface UpdateUserRequest{
     email : string,
@@ -206,12 +322,103 @@ export interface UpdateUserRequest{
 }
 
 export interface UpdateUserResponse{
-    message : string,
-    user?:{
-email: string,
-id : number,
-name: string,
-phone: string,
-surname: string,
+    success: boolean,
+    message: string,
+    data: {
+        user: {
+            email: string,
+            id: number,
+            name: string,
+            phone: string,
+            surname: string,
+        }
+    }
+}
+
+// Additional response types for modernized API
+export interface LoginResponse{
+    success: boolean,
+    message: string,
+    data: {
+        user: {
+            id: number,
+            email: string,
+            phone: string,
+            name: string,
+            surname: string,
+            gender: number,
+        }
+    }
+}
+
+export interface LogoutResponse{
+    success: boolean,
+    message: string,
+    data?: any
+}
+
+export interface RefreshTokenResponse{
+    success: boolean,
+    message: string,
+    data?: any
+}
+
+export interface BrandResponse{
+    success: boolean,
+    message: string,
+    data: {
+        brand: Brand
+    }
+}
+
+export interface CategoryResponse{
+    success: boolean,
+    message: string,
+    data: {
+        category: Category
+    }
+}
+
+export interface ProductResponse{
+    success: boolean,
+    message: string,
+    data: {
+        product: Product
+    }
+}
+
+export interface ChatExistsResponse{
+    success: boolean,
+    message: string,
+    data: {
+        chat_exists: boolean
+    }
+}
+
+export interface NewMessageResponse{
+    success: boolean,
+    message: string,
+    data: {
+        message: string
+    }
+}
+
+export interface FavoriteResponse{
+    success: boolean,
+    message: string,
+    data?: any
+}
+
+export interface ReviewResponse{
+    success: boolean,
+    message: string,
+    data?: any
+}
+
+export interface AttributeResponse{
+    success: boolean,
+    message: string,
+    data: {
+        attributes: Attribute[]
     }
 }

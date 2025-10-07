@@ -39,8 +39,9 @@ export default function LoginPage() {
         
         try{
             const login = await loginUser(request)
-            setUser(login.user)
-            localStorage.setItem("user", JSON.stringify(login.user))
+            setUser(login.data.user)
+            console.log(login.data.user)
+            localStorage.setItem("user", JSON.stringify(login.data.user))
             setResult('Giriş başarılı.');
             router.push("/");
         }catch(err:unknown){

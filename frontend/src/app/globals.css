@@ -1,5 +1,15 @@
 @import "tailwindcss";
+html body {
+    color-scheme: light !important;
+}
 
+@media (prefers-color-scheme: dark) {
+    html body {
+        color-scheme: light !important;
+        background-color: white !important;
+        color: black !important;
+    }
+}
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -24,3 +34,4 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+@medid

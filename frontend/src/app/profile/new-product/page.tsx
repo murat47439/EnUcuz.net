@@ -1,282 +1,409 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import { Brand, Category, Product } from "@/lib/types/types";
-import { PaginationRequest } from "@/lib/types/types";
+import { Brand, Category, CategoryAttribute, FeatureKey, Features, Product } from "@/lib/types/types";
+import { PaginationRequest, IdParam } from "@/lib/types/types";
 import { addProduct } from "@/lib/api/products/useAdd";
 import { getBrands } from "@/lib/api/brands/useGets";
 import { GetCategories } from "@/lib/api/categories/useGets";
+import { getCategoryAttributes } from "@/lib/api/attributes/useGetsCats";
 import Input from "@/features/components/input";
 import Button from "@/features/components/button";
 import dynamic from "next/dynamic";
 const Select = dynamic(() => import("react-select"), { ssr: false });
-import { ImagePlus, FileImage } from "lucide-react";
-import { useForm, FormProvider, useFormContext } from "react-hook-form";
+import { ImagePlus, FileImage, BadgeCheck,BadgeAlertIcon } from "lucide-react";
+import { useForm, FormProvider, useFieldArray } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 type FormData = {
-    name: string,
-    description: string,
-    price: number | null,
-    stock: number,
-    brand: {value: number; label: string} | null;
-    category: {value: number; label: string} | null;
-    files: File[]
+  name: string,
+  description: string,
+  price: number | null,
+  stock: number,
+  brand: { value: number; label: string } | null;
+  category: { value: number; label: string } | null;
+  files: File[];
+  features?: {
+    key: {
+      label: string,
+      value: number
+    };
+    value: string;
+  }[]
 }
 
 export default function NewProductPage() {
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [stock, setStock] = useState(1);
-    const [price, setPrice] = useState<number| null>(null);
-    const [brand, setBrand] = useState<{ value: number; label: string } | null>(null);
 
-    const [image, setImage] = useState("");
-    const [category, setCategory] = useState<{ value: number; label: string } | null>(null);
-    const [files, setFiles] = useState<File[]>([]);
-    const [result, setResult] = useState("");
+  const [result, setResult] = useState("");
+  const [step, setStep] = useState(1);
 
-    const [brands, setBrands] = useState<Brand[]>([]);
-    const [searchBrands, setSearchBrands] = useState("");
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [searchCategories, setSearchCategories] = useState("");
+  const methods = useForm<FormData>({
+    defaultValues: {
+      name: "",
+      description: "",
+      price: null,
+      stock: 1,
+      brand: null,
+      category: null,
+      files: [],
+      features: [{ key: {label: "", value: 0}, value: "" }]
+    },
+  });
 
-    
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            const fetchBrands = async () => {
-                const request: PaginationRequest = { search: searchBrands };
-                try {
-                    const data = await getBrands(request);
-                    setBrands(data.brands);
-                } catch (err) {
-                    console.error(err);
-                    setBrands([]);
-                }
-            };
-            fetchBrands();
-        }, 500);
-        return () => clearTimeout(timeoutId);
-    }, [searchBrands]);
+  const { register, handleSubmit, setValue, control, watch, formState: { errors } } = methods;
+  const files = watch("files");
 
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            const fetchCategories = async () => {
-                const request: PaginationRequest = { search: searchCategories };
-                try {
-                    const data = await GetCategories(request);
-                    setCategories(data.categories);
-                } catch (err) {
-                    console.error(err);
-                    setCategories([]);
-                }
-            };
-            fetchCategories();
-        }, 500);
-        return () => clearTimeout(timeoutId);
-    }, [searchCategories]);
-
-    const handleChangeFileCount = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files) return;
-
-        const selectedFiles = Array.from(e.target.files);
-        if (selectedFiles.length > 8) {
-            setResult("En fazla 8 adet dosya seçebilirsiniz.");
-            e.target.value = "";
-            setFiles([]);
-            return;
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [searchBrands, setSearchBrands] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [searchCategories, setSearchCategories] = useState("");
+  const [attributes, setAttributes] = useState<CategoryAttribute[]>([])
+  const category = watch("category")
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const fetchAttributes = async () => {
+        if (!category) return;
+        const request: IdParam = {
+          id: category?.value || 0
         }
-
-        setFiles(selectedFiles);
-    };
-
-    const handleNewProduct = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const request: Product = {
-            name: name,
-            description : description,
-            stock : stock,
-            price : price ?? 0,
-            brand_id: brand?.value || 0,
-            image_url: image,
-            category_id: category?.value || 0
-        };
-
         try {
-            switch (true) {
-                case name.length < 10:
-                    setResult("Ürün adı minimum 10 karakter olmalı.");
-                    return;
+          const data = await getCategoryAttributes(request)
+          setAttributes(data.data.category_attributes)
 
-                case description.length < 250:
-                    setResult("Ürün açıklaması minimum 250 karakter olmalı.");
-                    return;
-
-                case !brand:
-                    setResult("Lütfen marka seçiniz.");
-                    return;
-
-                case !category:
-                    setResult("Lütfen kategori seçiniz.");
-                    return;
-                case stock <1:
-                    setResult("Geçersiz stok")
-                    return;
-                default:
-                    setResult("");
-                    break;
-            }
-
-            await addProduct(request);
-            setResult("Ürün başarıyla eklendi.");
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setResult(err.message);
-            } else {
-                setResult("Bir hata oluştu.");
-            }
+        } catch (err) {
+          console.error(err)
+          setAttributes([]);
         }
-    };
+      };
+      fetchAttributes();
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [category]);
 
-    return (
-        <div>
-            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] justify-around w-auto p-4 gap-4 ml-auto">
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const fetchBrands = async () => {
+        const request: PaginationRequest = { search: searchBrands };
+        try {
+          const data = await getBrands(request);
+          setBrands(data.data.brands);
+        } catch (err) {
+          console.error(err);
+          setBrands([]);
+        }
+      };
+      fetchBrands();
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [searchBrands]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const fetchCategories = async () => {
+        const request: PaginationRequest = { search: searchCategories };
+        try {
+          const data = await GetCategories(request);
+          setCategories(data.data.categories);
+        } catch (err) {
+          console.error(err);
+          setCategories([]);
+        }
+      };
+      fetchCategories();
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [searchCategories]);
+
+  const handleChangeFileCount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    const selectedFiles = Array.from(e.target.files);
+    if (selectedFiles.length > 8) {
+      setResult("En fazla 8 adet dosya seçebilirsiniz.");
+      e.target.value = "";
+      setValue("files", []);
+      return;
+    }
+
+    setValue("files", selectedFiles);
+  };
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      if (data.name.length < 10) throw new Error("Ürün adı minimum 10 karakter olmalı.");
+      if (data.description.length < 250) throw new Error("Ürün açıklaması minimum 250 karakter olmalı.");
+      if (!data.brand) throw new Error("Lütfen marka seçiniz.");
+      if (!data.category) throw new Error("Lütfen kategori seçiniz.");
+      if (data.stock < 1) throw new Error("Geçersiz stok");
+
+      const request: Product = {
+        name: data.name,
+        description: data.description,
+        stock: Number(data.stock),
+        price: Number(data.price)  ?? 0,
+        brand_id: Number(data.brand.value),
+        category_id: Number(data.category.value),
+        image_url: "",
+        features: data.features,
+      };
+      await addProduct(request);
+      setResult("Ürün başarıyla eklendi.");
+      nextstep();
+    } catch (err: unknown) {
+      if (err instanceof Error) setResult(err.message);
+      else setResult("Bir hata oluştu.");
+      setStep(4);
+    }
+  };
+
+  const nextstep = () => setStep(step + 1);
+  const prevstep = () => setStep(step - 1);
+  const comeBack = () => setStep(1);
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "features",
+  })
+
+  return (
+    <div>
+      <FormProvider {...methods}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {step === 1 && (
+            <div>
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] justify-around w-auto p-4 gap-4 ml-auto">
+
+                {/* Ürün Bilgileri */}
                 <div>
-                    <h2 className="text-center font-bold">Ürün bilgileri</h2>
-                    <h4 className="text-center text-gray-600">
-                        Ürün bilgilerini detaylı ve anlaşılır şekilde ekleyin.
-                    </h4>
+                  <h2 className="text-center font-bold">Ürün bilgileri</h2>
+                  <h4 className="text-center text-gray-600">
+                    Ürün bilgilerini detaylı ve anlaşılır şekilde ekleyin.
+                  </h4>
 
-                    <form onSubmit={handleNewProduct} className="mt-10">
-                        <label className="grid grid-cols-2 gap-4 items-center">
-                            Ürün adı
-                            <Input
-                                required
-                                name="name"
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                        </label>
+                  {/* Ürün Adı */}
+                  <label className="grid grid-cols-2 gap-4 items-center mt-6">
+                    Ürün adı
+                    <Input {...register("name", { required: "Ürün adı zorunludur" })} />
+                  </label>
+                  {errors.name && (
+                    <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                  )}
 
-                        <label className="grid grid-cols-2 gap-4 mt-10 items-center">
-                            Açıklama
-                            <Input
-                                required
-                                name="description"
-                                type="text"
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                            />
-                        </label>
+                  {/* Açıklama */}
+                  <label className="grid grid-cols-2 gap-4 items-center mt-6">
+                    Açıklama
+                    <Input {...register("description", { required: "Açıklama zorunludur" })} />
+                  </label>
+                  {errors.description && (
+                    <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+                  )}
 
-                        <label className="grid grid-cols-2 gap-4 mt-10 items-center">
-                            Marka
-                           <Select
-                                options={brands?.map((b) => ({
-                                    label: b.name,
-                                    value: b.id
-                                }))}
-                                value={brand}
-                                onChange={(option) => setBrand(option  as {value: number ; label: string} | null)}
-                                onInputChange={(inputValue) => setSearchBrands(inputValue)}
-                                placeholder="Marka seçin..."
-                                isClearable
-                                noOptionsMessage={() => "Sonuç bulunamadı"}
-                                />
-                        </label>
+                  {/* Marka */}
+                  <label className="grid grid-cols-2 gap-4 items-center mt-6">
+                    Marka
+                    <Select
+                      options={brands?.map((b) => ({ label: b.name, value: b.id }))}
+                      value={watch("brand")}
+                      onChange={(option) =>
+                        setValue("brand", option as { value: number; label: string } | null)
+                      }
+                      onInputChange={(val) => setSearchBrands(val)}
+                      placeholder="Marka seçin..."
+                      isClearable
+                      noOptionsMessage={() => "Sonuç bulunamadı"}
+                    />
+                  </label>
 
-                        <label className="grid grid-cols-2 gap-4 mt-10 items-center">
-                            Kategori
-                            <Select
-                                options={categories?.map((b) => ({
-                                    label: b.name,
-                                    value: b.id
-                                }))}
-                                value={category}
-                                onChange={(option) => setCategory(option as {value: number ; label: string} | null)}
-                                onInputChange={(inputValue) => setSearchCategories(inputValue)}
-                                placeholder="Kategori seçin..."
-                                isClearable
-                                noOptionsMessage={() => "Sonuç bulunamadı"}
-                                />
-                        </label>
+                  {/* Kategori */}
+                  <label className="grid grid-cols-2 gap-4 items-center mt-6">
+                    Kategori
+                    <Select
+                      options={categories?.map((c) => ({ label: c.name, value: c.id }))}
+                      value={watch("category")}
+                      onChange={(option) =>
+                        setValue("category", option as { value: number; label: string } | null)
+                      }
+                      onInputChange={(val) => setSearchCategories(val)}
+                      placeholder="Kategori seçin..."
+                      isClearable
+                      noOptionsMessage={() => "Sonuç bulunamadı"}
+                    />
+                  </label>
 
-                        <label className="grid grid-cols-2 gap-4 mt-10 items-center">
-                            Fiyat
-                            <Input
-                                required
-                                name="price"
-                                type="number"
-                                min={0.01}
-                                value={price && price !== 0 ? price : ""}
-                                onChange={(e) => setPrice(Number(e.target.value))}
-                            />
-                        </label>
+                  {/* Fiyat */}
+                  <label className="grid grid-cols-2 gap-4 items-center mt-6">
+                    Fiyat
+                    <Input
+                      type="number"
+                      min={0.01}
+                      {...register("price", { required: "Fiyat zorunludur" })}
+                    />
+                  </label>
+                  {errors.price && (
+                    <p className="text-red-500 text-sm mt-1">{errors.price.message}</p>
+                  )}
 
-                        <label className="grid grid-cols-2 gap-4 mt-10 items-center">
-                            Stok(İsteğe bağlı)
-                            <Input
-                                name="stock"
-                                type="number"
-                                value={stock && stock !== 0 ? stock : ""}
-                                min={0.01}
-                                onChange={(e) => setStock(Number(e.target.value))}
-                            />
-                        </label>
-                    </form>
+                  {/* Stok */}
+                  <label className="grid grid-cols-2 gap-4 items-center mt-6">
+                    Stok (opsiyonel)
+                    <Input type="number" min={1} {...register("stock")} />
+                  </label>
                 </div>
 
+                {/* Dikey çizgi */}
                 <div className="border-l hidden sm:block w-0.5 border-gray-900"></div>
 
+                {/* Ürün Resimleri */}
                 <div>
-                    <h2 className="text-center font-bold">Ürün Resimleri</h2>
-                    <h4 className="text-center text-gray-600">
-                        8 adet fotoğraf yüklemelisiniz.
-                    </h4>
-                    <ImagePlus className="mt-10 mx-auto" size={75} />
+                  <h2 className="text-center font-bold">Ürün Resimleri</h2>
+                  <h4 className="text-center text-gray-600">
+                    En fazla 8 adet fotoğraf yükleyebilirsiniz.
+                  </h4>
+                  <ImagePlus className="mt-10 mx-auto" size={75} />
 
-                    <Input
-                        id="fileinput"
-                        hidden
-                        onChange={handleChangeFileCount}
-                        required
-                        type="file"
-                        multiple
-                        accept="image/*"
-                    />
-                    <label
-                        htmlFor="fileinput"
-                        className="cursor-pointer px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 flex gap-4 items-center mx-auto mt-20"
-                    >
-                        <FileImage size={30} />
-                        Fotoğrafları yükle (MAX 8)
-                    </label>
+                  <Input
+                    id="fileinput"
+                    hidden
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleChangeFileCount}
+                  />
+                  <label
+                    htmlFor="fileinput"
+                    className="cursor-pointer px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 flex gap-4 items-center mx-auto mt-6"
+                  >
+                    <FileImage size={30} />
+                    Fotoğrafları yükle (MAX 8)
+                  </label>
 
-                    {files.length > 0 && (
-                        <div className="grid grid-cols-4 gap-4">
-                            {files.map((file, idx) => (
-                                <div
-                                    key={idx}
-                                    className="flex flex-col items-center mt-4"
-                                >
-                                    <img
-                                        src={URL.createObjectURL(file)}
-                                        alt={file.name}
-                                        className="w-24 h-24 object-cover rounded-lg shadow"
-                                    />
-                                    <p className="text-center text-gray-600">
-                                        {file.name}
-                                    </p>
-                                </div>
-                            ))}
+                  {files.length > 0 && (
+                    <div className="grid grid-cols-4 gap-4 mt-4">
+                      {files.map((file, idx) => (
+                        <div key={idx} className="flex flex-col items-center">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={file.name}
+                            className="w-24 h-24 object-cover rounded-lg shadow"
+                          />
+                          <p className="text-center text-gray-600 text-sm">
+                            {file.name}
+                          </p>
                         </div>
-                    )}
+                      ))}
+                    </div>
+                  )}
                 </div>
+
+              </div>
+              <p className="text-center text-black mt-4 pb-4">{result}</p>
+              <Button type="button" onClick={nextstep}>Sonraki adım</Button>
+            </div>
+            // 🔹 step === 1 grid burada kapanıyor
+          )}
+
+
+
+          {step === 2 && (
+            <div>
+              <div>
+                <h2 className="text-center font-bold">Ürün Özellikleri</h2>
+                <h4 className="text-center text-gray-600 mb-8">
+                  Ürününüzü öne çıkaracak özellikleri eksiksiz ve doğru şekilde belirtin.
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => append({ key: {label: "", value:0}, value: "" })}
+                  className="bg-blue-500 rounded-lg text-white px-4 py-1 fixed right-8 bottom-8 z-10"
+                >
+                  Yeni Özellik Ekle
+                </button>
+                <div className="grid grid-cols-1 sm:grid-cols-2">
+                  {!category ? (
+                    <h1 className="font-bold text-center w-full col-span-2">
+                      Kategori seçmeniz gerekir
+                    </h1>
+                  ) : !attributes || attributes.length === 0 ? (
+                    <h1 className="font-bold text-center w-full col-span-2">
+                      Bu kategoriye ait özellik bulunamadı
+                    </h1>
+                  ) : (
+                    <>
+                      <h1 className="col-span-2 text-center font-extrabold px-2">Özellik Eklemeye Başlamak İçin "Yeni Özellik Ekle" Butonuna Basın</h1>
+
+                      {fields.map((field, index) => (
+                        <div key={field.id} className="flex gap-2 items-center p-4 col-span-2 sm:col-span-1">
+                          <Select
+                      options={attributes?.map((b) => ({ label: b.attribute_name, value: b.attribute_id }))}
+                      value={watch(`features.${index}.key`)}
+                      className="w-full p-2"
+                     onChange={(option) => {
+                        const selected = option && typeof option === "object" ? option as FeatureKey : { label: "", value: 0};
+                        setValue(`features.${index}.key`, selected, { shouldDirty: true });
+                      }}
+                      onInputChange={(val) => setSearchBrands(val)}
+                      placeholder="Özellik seçin..."
+                      isClearable
+                      noOptionsMessage={() => "Sonuç bulunamadı"}
+                    />
+                            
+                            
+    
+
+                          <Input
+                            {...register(`features.${index}.value` as const)}
+                            placeholder="Değer"
+                            className="border p-2 rounded-lg min-w-2"
+                          />
+
+                          <button
+                            type="button"
+                            onClick={() => remove(index)}
+                            className="bg-red-500 p-2 text-white px-2 rounded"
+                          >
+                            Sil
+                          </button>
+                        </div>
+                      ))}
+                    </>
+                  )}
+
+
+
+                </div>
+              </div>
+
+              <p className="text-center text-black mt-4 pb-4">{result}</p>
+              <div className="grid grid-cols-2 gap-4">
+
+                <Button type="button" onClick={prevstep}>Önceki adım</Button>
+                <Button type="submit" className="bg-green-600 hover:bg-green-500">Ürünü Yükle</Button>
+              </div>
+
             </div>
 
-            <p className="text-center text-black mt-4 pb-4">{result}</p>
-            <Button>Sonraki adım</Button>
-        </div>
-    );
-}
+
+          )}
+
+        </form>
+      </FormProvider>
+          {step === 3 && (
+            <div className="w-full grid grid-cols-1 place-items-center">
+              <BadgeCheck size={150} />
+              <h1 className="text-center font-extrabold">{result}</h1>
+            </div>
+          )}
+          {step === 4 && (
+            <div className="w-full grid grid-cols-1 place-items-center">
+              <BadgeAlertIcon size={150} />
+              <h1 className="text-center font-extrabold">{result}</h1>
+              <Button type="button" className="mt-8" onClick={comeBack}>Geri Dön</Button>
+            </div>
+          )}
+    </div>
+  );
+
+
+
+};
+
+

@@ -12,8 +12,7 @@ export async function getProducts(data: PaginationRequest) {
         
         
         const res = await api.get<ProductsListResponse>(`/products?${params}`)
-        console.log(res)
-        return res.data
+        return res.data.data
     }catch(err: unknown){
         const error = err as AxiosError<{ message: string }>;
         throw new Error(error?.response?.data?.message || "Ürünler bulunamadı")

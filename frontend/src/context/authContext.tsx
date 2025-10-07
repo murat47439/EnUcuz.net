@@ -23,13 +23,23 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({children}: {children: ReactNode}) =>{
     const [user,setUser] = useState<User | undefined>(undefined);
    
-    useEffect(()=>{
+    useEffect(() => {
+    try {
         const storedUser = localStorage.getItem("user");
-        
 
-        if (storedUser) setUser(JSON.parse(storedUser))
-
-    }, []);
+        // null veya "undefined" string kontrolü
+        if (storedUser && storedUser !== "undefined") {
+            setUser(JSON.parse(storedUser));
+        } else {
+            setUser(undefined);
+            localStorage.removeItem("user"); // temizle
+        }
+    } catch (error) {
+        console.error("localStorage parsing error:", error);
+        localStorage.removeItem("user");
+        setUser(undefined);
+    }
+}, []);
 
     const logout = () => {
         setUser(undefined)

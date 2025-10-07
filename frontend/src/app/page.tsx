@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import ProductCard from "@/features/components/productCard"
 import SearchBar from "@/features/components/searchbar"
 import { PaginationRequest, Product } from "@/lib/types/types"
@@ -8,8 +8,7 @@ import { getProducts } from "@/lib/api/products/useGetProducts"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 
-
-export default function HomePage() {
+function HomePageContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const searchParams = useSearchParams()
   const brand = parseInt(searchParams.get('brand') || '0')
@@ -33,7 +32,7 @@ export default function HomePage() {
       }
     }
       fetchData();
-  }, [searchQuery]);
+  }, [searchQuery, brand, category]);
 
   const handleSearchSubmit = (searchTerm: string) => {
     setSearchQuery(searchTerm)
@@ -45,17 +44,23 @@ export default function HomePage() {
       <p className="text-center text-gray-600 mb-8">Aradığınız ürünü satıcılardan uygun fiyata alın!</p>
       <SearchBar onSearchSubmit={handleSearchSubmit} />
       { products?.length >0 ?(
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ">
         {products?.map((product)=> (
           <Link key={product.id} href={`/product/${product.id}`}>
           <ProductCard key={product.id} product={product} />
           </Link>
         ))}  
       </div>  
-      ):(
-        <p className="text-center border rounded-2xl p-4">Arama kriterlerinize uygun ürün bulunamadı.</p>
-      )
+      ):(<p className="text-center border rounded-2xl p-4">Arama kriterlerinize uygun ürün bulunamadı.</p>)
     }
     </main>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div>Yükleniyor...</div>}>
+      <HomePageContent />
+    </Suspense>
   )
 }
