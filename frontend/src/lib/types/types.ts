@@ -15,6 +15,7 @@ export interface Favorite{
     id: number,
     user_id: number,
     product_id: number,
+    product: Product,
     created_at:string,
     deleted_at : string
 }
@@ -166,16 +167,6 @@ export interface UpdateCategoryRequest{
 export interface AddFavoriteRequest{
     id: number
 }
-export interface FavoritesListResponse{
-    success: boolean,
-    message: string,
-    data: {
-        favourites: Favorite[],
-        pagination?: {
-            page: number,
-        }
-    }
-}
 export interface ProductDetail{    
 data: {Product: Product,
 Attribute: ProductAttribute[]
@@ -314,11 +305,12 @@ export interface RegisterResponse{
     data?: any
 }
 export interface UpdateUserRequest{
+    id: number,
     email : string,
     name : string,
     surname : string,
     phone: string,
-    gender: number,
+    gender?: number,
 }
 
 export interface UpdateUserResponse{
@@ -421,4 +413,17 @@ export interface AttributeResponse{
     data: {
         attributes: Attribute[]
     }
+}
+
+export type NotificationType = 'success' | 'warning' | 'error' | 'info';
+
+export interface Notification {
+    id: number;
+    message: string;
+    type: NotificationType;
+    duration?: number;
+}
+
+export interface ToastContextType {
+    showNotification: (message: string, type: NotificationType, duration?: number) => void;
 }

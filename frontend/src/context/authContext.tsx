@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext,useState, ReactNode, useEffect } from "react"
-
+import { logoutUser } from "@/lib/api/user/useLogout";
 interface User {
   id: number;
   role?: string;
@@ -41,9 +41,19 @@ export const AuthProvider = ({children}: {children: ReactNode}) =>{
     }
 }, []);
 
-    const logout = () => {
+    const logout = async () => {
         setUser(undefined)
-       
+        try{
+            const log = await logoutUser()
+            console.log(log.message)
+            window.location.href = ("/")
+        }catch(err: unknown){
+            if (err instanceof Error){
+                throw new Error(err.message)
+            } else{
+                throw new Error("Bir hata oluştu.")
+            }  
+        }
         localStorage.removeItem("user");
         
     }

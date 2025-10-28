@@ -165,7 +165,7 @@ export default function NewProductPage() {
   })
 
   return (
-    <div>
+    <div className="p-8">
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           {step === 1 && (

@@ -1,8 +1,6 @@
-
 import { AxiosError } from "axios";
 import { api } from "../apiClient";
-import { IdParam, ProductDetail
- } from "@/lib/types/types";
+import { IdParam, ProductDetail} from "@/lib/types/types";
 
 export async function getProduct(data: IdParam): Promise<ProductDetail> {
     try{

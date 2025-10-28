@@ -46,9 +46,8 @@ function HomePageContent() {
       { products?.length >0 ?(
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ">
         {products?.map((product)=> (
-          <Link key={product.id} href={`/product/${product.id}`}>
+          
           <ProductCard key={product.id} product={product} />
-          </Link>
         ))}  
       </div>  
       ):(<p className="text-center border rounded-2xl p-4">Arama kriterlerinize uygun ürün bulunamadı.</p>)
