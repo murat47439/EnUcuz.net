@@ -32,13 +32,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-b from-slate-50 via-white to-slate-50`}
       >
         <AuthProvider>
         <ToastProvider>
         <Header></Header>
-        
-          <main className="pt-28">{children}</main>
+        {/* Decorative background glows */}
+        <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+          <div className="absolute -top-10 -left-10 h-64 w-64 bg-blue-300/30 blur-3xl rounded-full"></div>
+          <div className="absolute top-1/3 -right-10 h-72 w-72 bg-indigo-300/20 blur-3xl rounded-full"></div>
+        </div>
+
+          <main className="pt-28 min-h-screen">{children}</main>
 
 
         </ToastProvider>

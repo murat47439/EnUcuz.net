@@ -29,8 +29,8 @@ export default function favoritePage(){
         fetchData();
     }, []);
     return (
-        <main className="container mx-auto p-4">
-        <h1 className="text-center font-bold mb-8 text-lg"> Favori Ürünlerim </h1>
+        <main className="container mx-auto px-4 py-8">
+        <h1 className="text-center font-extrabold mb-6 text-xl"> Favori Ürünlerim </h1>
         { products?.length >0 ?(
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ">
         {products?.map((product)=> (
@@ -39,7 +39,7 @@ export default function favoritePage(){
           
         ))}  
       </div>  
-      ):(<p className="text-center border rounded-2xl mt-8 p-4">Henüz favorilere ürün yüklemediniz.</p>)
+      ):(<p className="text-center border rounded-2xl mt-8 p-4 text-gray-600">Henüz favorilere ürün yüklemediniz.</p>)
     }
     </main>
     )

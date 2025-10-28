@@ -54,46 +54,47 @@ export default function ProfilePage() {
             }
             await updateUser(request)
             setResult("Profil başarıyla güncellendi");
-            const timer= setTimeout(() => {
-                setResult("")
-            }, 2000);
+            
         }catch(err: unknown){
             if (err instanceof Error) setResult(err.message)
             else setResult("Bir hata oluştu")
-            const timer= setTimeout(() => {
-                setResult("")
-            }, 2000);
+            
             
         }
     }
     return (
-       <main className="container mx-auto p-6">
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white p-6 rounded-lg shadow-lg">
+       <main className="container mx-auto max-w-5xl px-4 py-10">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
     
     {/* Kullanıcı Profili */}
     <div className="flex flex-col items-center">
       <Image
         src="/default.png"
-        className="rounded-full border border-gray-200"
+        className="rounded-full border border-gray-100 ring-4 ring-gray-50"
         alt={user.data.user.name}
         width={120}
         height={120}
       />
-      <h2 className="mt-4 text-2xl font-extrabold text-gray-800">{user.data.user.name}</h2>
-      <p className="text-sm text-gray-500">{user.data.user.gender}</p>
+      <h2 className="mt-4 text-2xl font-extrabold bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent">
+        {user.data.user.name}
+      </h2>
+      <p className="mt-1 inline-flex items-center rounded-full bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1">
+        {user.data.user.gender}
+      </p>
     </div>
 
     {/* Kişisel Bilgiler Başlığı */}
     <div className="flex flex-col justify-center">
-      <h2 className="text-xl font-bold text-blue-600 border-b-2 border-blue-200 pb-2">
+      <h2 className="text-xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
         Kişisel Bilgiler
       </h2>
+      <p className="text-sm text-gray-500 mt-1">Bilgilerinizi güncel tutun.</p>
     </div>
   </div>
 
   {/* Form */}
   <form
-    className="mt-12 bg-white p-6 rounded-lg shadow-lg space-y-6"
+    className="mt-10 bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6"
     onSubmit={handleSubmit(onSubmit)}
   >
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -106,7 +107,7 @@ export default function ProfilePage() {
           type="text"
           defaultValue={user.data.user.name ?? ""}
           name="name"
-          className="mt-2 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="mt-2 border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
@@ -118,7 +119,7 @@ export default function ProfilePage() {
           type="text"
           defaultValue={user.data.user.surname ?? ""}
           name="surname"
-          className="mt-2 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="mt-2 border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
@@ -130,7 +131,7 @@ export default function ProfilePage() {
           type="tel"
           defaultValue={user.data.user.phone ?? ""}
           name="phone"
-          className="mt-2 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="mt-2 border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
@@ -142,7 +143,7 @@ export default function ProfilePage() {
           type="email"
           defaultValue={user.data.user.email ?? ""}
           name="email"
-          className="mt-2 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="mt-2 border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
@@ -157,24 +158,23 @@ export default function ProfilePage() {
     <div className="flex justify-end">
       <Button
         type="submit"
-        className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+        className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-full shadow hover:from-blue-700 hover:to-indigo-700 transition"
       >
         Kaydet
       </Button>
     </div>
   </form>
 
-  <form className="mt-12 bg-white p-6 rounded-lg shadow-lg space-y-6 ">
-        <h1 className="text-blue-500 text-center font-bold text-xl border-b-2 border-blue-200">Şifre Değiştirme</h1>
+  <form className="mt-10 bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6 ">
+        <h1 className="text-center font-extrabold text-xl bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Şifre Değiştirme</h1>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <span>Eski Şifre: <Input></Input></span>
-        <span>Yeni Şifre: <Input></Input></span>
-        <span>Yeni Şifre (Tekrar)   : <Input></Input></span>
+        <span className="text-sm text-gray-700">Eski Şifre: <Input className="mt-2" /></span>
+        <span className="text-sm text-gray-700">Yeni Şifre: <Input className="mt-2" /></span>
+        <span className="text-sm text-gray-700">Yeni Şifre (Tekrar): <Input className="mt-2" /></span>
         </div>
-        
-        <Button type="submit">Şifreyi Değiştir</Button>
+        <Button type="submit" className="rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">Şifreyi Değiştir</Button>
   </form>
-  <div className="w-full flex justify-end mt-4"><Button className="text-white bg-red-700 p-4 " style={{width: "150px "}} onClick={logout}>Çıkış yap</Button></div>
+  <div className="w-full flex justify-end mt-4"><Button className="text-white bg-red-700 p-4 rounded-full" style={{width: "150px "}} onClick={logout}>Çıkış yap</Button></div>
 </main>
     )
 }

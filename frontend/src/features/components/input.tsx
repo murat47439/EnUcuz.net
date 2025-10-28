@@ -6,7 +6,7 @@ interface InputProbs extends React.InputHTMLAttributes<HTMLInputElement>{
 }
 
 const Input = ({children,className = '', ...rest}: InputProbs) => {
-    const baseClasses = 'w-full p-3 pl-10 border border-gray-300 rounded-lg  focus:ring-blue-500 focus:border-blue-500 transition'
+    const baseClasses = 'w-full p-3 pl-10 rounded-lg border border-gray-200 bg-white/80 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition'
 
     return (
         <div className="relative flex items-center w-full">

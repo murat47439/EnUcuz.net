@@ -174,7 +174,7 @@ export default function NewProductPage() {
 
                 {/* Ürün Bilgileri */}
                 <div>
-                  <h2 className="text-center font-bold">Ürün bilgileri</h2>
+                  <h2 className="text-center font-semibold">Ürün bilgileri</h2>
                   <h4 className="text-center text-gray-600">
                     Ürün bilgilerini detaylı ve anlaşılır şekilde ekleyin.
                   </h4>
@@ -250,11 +250,11 @@ export default function NewProductPage() {
                 </div>
 
                 {/* Dikey çizgi */}
-                <div className="border-l hidden sm:block w-0.5 border-gray-900"></div>
+                <div className="border-l hidden sm:block w-0.5 border-gray-100"></div>
 
                 {/* Ürün Resimleri */}
                 <div>
-                  <h2 className="text-center font-bold">Ürün Resimleri</h2>
+                  <h2 className="text-center font-semibold">Ürün Resimleri</h2>
                   <h4 className="text-center text-gray-600">
                     En fazla 8 adet fotoğraf yükleyebilirsiniz.
                   </h4>
@@ -270,7 +270,7 @@ export default function NewProductPage() {
                   />
                   <label
                     htmlFor="fileinput"
-                    className="cursor-pointer px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 flex gap-4 items-center mx-auto mt-6"
+                    className="cursor-pointer px-4 py-2 rounded-full bg-gray-700 text-white hover:bg-gray-800 flex gap-4 items-center mx-auto mt-6 shadow-sm"
                   >
                     <FileImage size={30} />
                     Fotoğrafları yükle (MAX 8)
@@ -296,7 +296,7 @@ export default function NewProductPage() {
 
               </div>
               <p className="text-center text-black mt-4 pb-4">{result}</p>
-              <Button type="button" onClick={nextstep}>Sonraki adım</Button>
+              <Button type="button" className="rounded-full" onClick={nextstep}>Sonraki adım</Button>
             </div>
             // 🔹 step === 1 grid burada kapanıyor
           )}
@@ -306,14 +306,14 @@ export default function NewProductPage() {
           {step === 2 && (
             <div>
               <div>
-                <h2 className="text-center font-bold">Ürün Özellikleri</h2>
+                <h2 className="text-center font-semibold">Ürün Özellikleri</h2>
                 <h4 className="text-center text-gray-600 mb-8">
                   Ürününüzü öne çıkaracak özellikleri eksiksiz ve doğru şekilde belirtin.
                 </h4>
                 <button
                   type="button"
                   onClick={() => append({ key: {label: "", value:0}, value: "" })}
-                  className="bg-blue-500 rounded-lg text-white px-4 py-1 fixed right-8 bottom-8 z-10"
+                  className="bg-blue-600 hover:bg-blue-700 rounded-full text-white px-4 py-2 fixed right-8 bottom-8 z-10 shadow"
                 >
                   Yeni Özellik Ekle
                 </button>
@@ -358,7 +358,7 @@ export default function NewProductPage() {
                           <button
                             type="button"
                             onClick={() => remove(index)}
-                            className="bg-red-500 p-2 text-white px-2 rounded"
+                            className="bg-red-600 hover:bg-red-700 p-2 text-white px-2 rounded-full"
                           >
                             Sil
                           </button>
@@ -375,8 +375,8 @@ export default function NewProductPage() {
               <p className="text-center text-black mt-4 pb-4">{result}</p>
               <div className="grid grid-cols-2 gap-4">
 
-                <Button type="button" onClick={prevstep}>Önceki adım</Button>
-                <Button type="submit" className="bg-green-600 hover:bg-green-500">Ürünü Yükle</Button>
+                <Button type="button" className="rounded-full" onClick={prevstep}>Önceki adım</Button>
+                <Button type="submit" className="bg-green-600 hover:bg-green-700 rounded-full">Ürünü Yükle</Button>
               </div>
 
             </div>

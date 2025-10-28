@@ -47,12 +47,12 @@ const ToastNotification = ({message, type, duration=3000, onClose}: ToastProbs) 
 
     }
     if (!isVisible) return null;
-    return (
+  return (
     <div
       className={`
-        fixed top-4 right-4 z-50 p-4 border rounded-lg shadow-xl 
+        fixed top-4 right-4 z-50 p-4 border rounded-xl shadow-xl 
         flex items-center space-x-4 transition-all duration-300 ease-out 
-        transform translate-x-0 opacity-100
+        transform translate-x-0 opacity-100 backdrop-blur-sm
         ${classes}
       `}
       role="alert"

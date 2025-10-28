@@ -103,24 +103,25 @@ export default function LoginPage() {
     }
 
     return(
-        <div className="max-w-md mx-auto mt-10">
-            <div className="grid grid-cols-2 ">
-                <Button className="bg-gray-800 hover:bg-gray-500" onClick={() => {setLogin(true); setRegister(false)}}>Giriş</Button>
-            <Button className="bg-gray-800 hover:bg-gray-500" onClick={() => {setLogin(false); setRegister(true)}}>Kayıt ol</Button>
+        <div className="max-w-md mx-auto mt-12 p-6 bg-white rounded-xl border border-gray-100 shadow-sm">
+            <h1 className="text-center text-2xl font-extrabold mb-4 bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent">Hesabına Giriş Yap</h1>
+            <div className="grid grid-cols-2 gap-2">
+                <Button className="bg-gray-900 hover:bg-gray-800 rounded-full" onClick={() => {setLogin(true); setRegister(false)}}>Giriş</Button>
+            <Button className="bg-gray-900 hover:bg-gray-800 rounded-full" onClick={() => {setLogin(false); setRegister(true)}}>Kayıt ol</Button>
             </div>
             
             {login && (
-                <div className="grid grid-cols-1 max-w-md mx-auto mt-10 gap-4">
+                <div className="grid grid-cols-1 max-w-md mx-auto mt-8 gap-4">
             <form onSubmit={handleLoginForm} className="flex flex-col gap-4">
                 <Input required type="email" name="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 <Input required type="password" name="password" placeholder="Şifre" value={password} onChange={(e) => setPassword(e.target.value)} />
-                <Button type="submit">Giriş yap</Button>
+                <Button type="submit" className="rounded-full">Giriş yap</Button>
             </form>
             
         </div>
             )}
             {register && (
-                <div className="grid grid-cols-1 max-w-md mx-auto mt-10 gap-4">
+                <div className="grid grid-cols-1 max-w-md mx-auto mt-8 gap-4">
                     <form onSubmit={handleRegisterForm} className="flex flex-col gap-4">
                         <div className="grid grid-cols-2 gap-4">
                             <Input required type="text" name="name" placeholder="Ad" value={name} onChange={(e) => setName(e.target.value)}></Input>
@@ -132,11 +133,11 @@ export default function LoginPage() {
 
                         <Input required type="password" name="password" placeholder="Şifre" value={regpassword} onChange={(e) => setregPassword(e.target.value)} />
                         <Input required type="password" name="password" placeholder="Şifre Tekrar" value={reg1password} onChange={(e) => setreg1Password(e.target.value)} />
-                        <Button type="submit">Kayıt ol</Button>
+                        <Button type="submit" className="rounded-full">Kayıt ol</Button>
                     </form>
                 </div>
             )}
-            {result && <p className="text-center mt-2 text-black">{result}</p>}
+            {result && <p className="text-center mt-3 text-gray-700">{result}</p>}
         
         </div>
     )

@@ -44,11 +44,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, favori = false }) =>
     return (
         
         <Link key={product.id} href={`/product/${product.id}`}>
-        <div className="flex flex-col border max-w-full border-black rounded-2xl p-4 h-full relative">
+        <div className="rounded-2xl p-[1px] bg-gradient-to-b from-indigo-200/50 to-blue-100/40">
+        <div className="group flex flex-col max-w-full rounded-2xl p-4 h-full relative border border-gray-50 shadow-sm hover:shadow-lg transition-all duration-300 bg-white hover:-translate-y-1">
          {favori ? (
             
             <button
-                className="absolute top-4 right-4"
+                className="absolute top-4 right-4 p-2 rounded-full bg-white/80 backdrop-blur hover:bg-white shadow transition"
                 onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -59,7 +60,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, favori = false }) =>
             </button>
             ) : (
             <button
-                className="absolute top-4 right-4"
+                className="absolute top-4 right-4 p-2 rounded-full bg-white/80 backdrop-blur hover:bg-white shadow transition"
                 onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -70,23 +71,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, favori = false }) =>
             </button>
         )}
 
-            <div className="flex justify-center items-center w-full h-full">
+            <div className="flex justify-center items-center w-full h-40 md:h-48 overflow-hidden rounded-lg bg-gradient-to-b from-slate-50 to-white">
                 <Image
                 src={product?.image_url || "/placeholder.png"}
                 alt={product?.name}
                 width={150}
                 height={100}
-                className="rounded-lg object-cover"
+                className="rounded-lg object-contain ring-1 ring-gray-100 w-full h-full transition-transform duration-300 group-hover:scale-105"
             />
                 </div>
-            <p className="font-bold text-black mt-2 max-w-full truncate">{product.name}</p><br></br>
-            <div className="flex justify-between w-full">
-                <p className="font-bold text-blue-500 mt-1">
+            <p className="font-semibold text-gray-900 mt-3 max-w-full line-clamp-2 leading-snug">{product.name}</p>
+            <div className="mt-3 flex justify-between w-full items-center">
+                <p className="inline-flex items-center rounded-full bg-blue-50 text-blue-700 text-sm font-semibold px-3 py-1 shadow-sm">
                 {product.price ? String(product.price / 100 ) + " ₺" : "Fiyat bilgisi yok"}
                 </p>
-                <p className="font-bold text-black">{product.seller_name}</p>
+                <p className="text-sm text-gray-500">{product.seller_name}</p>
             </div>
             
+        </div>
         </div>
         </Link>
     );
