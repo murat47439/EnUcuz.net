@@ -28,14 +28,14 @@ export default function ProfilePage() {
 
     })
     const {logout} = useAuth();
-    const {register, handleSubmit, setValue,control, watch, formState: {errors}} = methods;
+    const {register, handleSubmit} = methods;
     useEffect(()=> {
         (async () =>{
             try{
                 const data = await getUserProfile()
                 if (!data.data.user) window.location.href = "/login"
                 setUser(data)
-            }catch(err){
+            }catch{
                 window.location.href = "/login";
             }
         })()

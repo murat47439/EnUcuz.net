@@ -3,7 +3,7 @@
 export interface Message{
     success: boolean,
     message: string,
-    data?: any,
+    data?: unknown,
 }
 export interface Category{
     id : number,
@@ -302,7 +302,7 @@ export interface RegisterRequest{
 export interface RegisterResponse{
     success: boolean,
     message: string,
-    data?: any
+    data?: unknown
 }
 export interface UpdateUserRequest{
     id: number,
@@ -346,13 +346,13 @@ export interface LoginResponse{
 export interface LogoutResponse{
     success: boolean,
     message: string,
-    data?: any
+    data?: unknown
 }
 
 export interface RefreshTokenResponse{
     success: boolean,
     message: string,
-    data?: any
+    data?: unknown
 }
 
 export interface BrandResponse{
@@ -398,13 +398,13 @@ export interface NewMessageResponse{
 export interface FavoriteResponse{
     success: boolean,
     message: string,
-    data?: any
+    data?: unknown
 }
 
 export interface ReviewResponse{
     success: boolean,
     message: string,
-    data?: any
+    data?: unknown
 }
 
 export interface AttributeResponse{

@@ -5,9 +5,8 @@ import { IdParam } from "@/lib/types/types";
 import Link from "next/link";
 
 export default async function ProductDetailPage({params} : {params : {id : number}}) {
-    const request: IdParam = {
-        id: params.id
-    }
+    const resolvedParams = await params; // async olarak çöz
+    const request: IdParam = { id: Number(resolvedParams.id) };
 
     const product = await getProduct(request)
     if(!product){

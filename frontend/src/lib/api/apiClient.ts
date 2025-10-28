@@ -1,7 +1,6 @@
 import axios,{AxiosRequestConfig, AxiosError} from "axios";
 import { logoutUser } from "./user/useLogout";
 import { refreshToken } from "./user/useAccess";
-import { useToast } from "@/context/toastContext";
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export interface AxiosRequestConfigWithRetry extends AxiosRequestConfig {
