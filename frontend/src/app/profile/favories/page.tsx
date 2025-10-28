@@ -2,14 +2,23 @@
 import React,{useEffect, useState} from "react";
 import { useToast } from "@/context/toastContext";
 import { getFavourites } from "@/lib/api/favorites/useGet";
-import Link from "next/link";
+
 import ProductCard from "@/features/components/productCard";
-import { HeartMinus } from "lucide-react";
-import { removeFavorite } from "@/lib/api/favorites/useRemove";
-import { IdParam } from "@/lib/types/types";
+import { useRouter } from "next/router";
 import { Product } from "@/lib/types/types";
 
 export default function favoritePage(){
+
+    const router = useRouter();
+
+  useEffect(() => {
+    // localStorage'dan user bilgisi al
+    const user = localStorage.getItem("user"); // veya kullandığınız key
+    if (!user) {
+      router.push("/login"); // user yoksa login sayfasına yönlendir
+    }
+  }, [router]);
+
     const [products, setProducts] = useState<Product[]>([]);
     const {showNotification} = useToast()
     useEffect(()=>{

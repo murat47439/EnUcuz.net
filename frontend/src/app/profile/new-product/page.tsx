@@ -1,5 +1,6 @@
 "use client"
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Brand, Category, CategoryAttribute, FeatureKey, Features, Product } from "@/lib/types/types";
 import { PaginationRequest, IdParam } from "@/lib/types/types";
 import { addProduct } from "@/lib/api/products/useAdd";
@@ -33,6 +34,16 @@ type FormData = {
 }
 
 export default function NewProductPage() {
+
+  const router = useRouter();
+
+  useEffect(() => {
+    // localStorage'dan user bilgisi al
+    const user = localStorage.getItem("user"); // veya kullandığınız key
+    if (!user) {
+      router.push("/login"); // user yoksa login sayfasına yönlendir
+    }
+  }, [router]);
 
   const [result, setResult] = useState("");
   const [step, setStep] = useState(1);

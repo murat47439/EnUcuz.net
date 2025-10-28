@@ -3,7 +3,19 @@ import React, {useEffect, useState} from "react"
 import { GetUserProducts } from "@/lib/api/products/useGetUserProducts"
 import { Product } from "@/lib/types/types"
 import ProductCard from "@/features/components/productCard"
+import { useRouter } from "next/navigation";
 export default function ProfileProductPage(){
+
+    const router = useRouter();
+
+  useEffect(() => {
+    // localStorage'dan user bilgisi al
+    const user = localStorage.getItem("user"); // veya kullandığınız key
+    if (!user) {
+      router.push("/login"); // user yoksa login sayfasına yönlendir
+    }
+  }, [router]);
+    
     const [products, setProducts] = useState<Product[]>([])
 
     useEffect(()=>{
