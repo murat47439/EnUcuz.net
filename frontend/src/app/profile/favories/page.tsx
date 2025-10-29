@@ -2,7 +2,7 @@
 import React,{useEffect, useState} from "react";
 import { useToast } from "@/context/toastContext";
 import { getFavourites } from "@/lib/api/favorites/useGet";
-
+import { Favorites } from "@/lib/types/types";
 import ProductCard from "@/features/components/productCard";
 import { useRouter } from "next/navigation";
 import { Product } from "@/lib/types/types";
@@ -24,8 +24,8 @@ export default function FavoritePage(){
     useEffect(()=>{
         const fetchData = async () =>{
             try{
-                const data = await getFavourites()
-                setProducts(data)
+              const data: Favorites = await getFavourites();
+              setProducts(data.data.products || [])
             }catch(err){
                 if (err instanceof Error) {
                 setProducts([]);

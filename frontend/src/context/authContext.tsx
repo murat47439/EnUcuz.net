@@ -44,6 +44,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) =>{
     const logout = async () => {
         setUser(undefined)
         try{
+            localStorage.removeItem("user");
             const log = await logoutUser()
             console.log(log.message)
             window.location.href = ("/")

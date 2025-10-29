@@ -43,6 +43,16 @@ export interface Product{
     created_at?: { Time: string; Valid: boolean; };
     updated_at?: { Time: string; Valid: boolean; };
 }
+export interface Favorites{
+    success: boolean,
+    message: string,
+    data: {
+        products: Product[],
+        pagination?: { 
+            page: number,
+        }
+    }
+}
 export interface Brand{
     id: number,
     name: string,
