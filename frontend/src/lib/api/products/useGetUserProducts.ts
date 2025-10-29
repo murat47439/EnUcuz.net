@@ -1,10 +1,10 @@
 import { AxiosError } from "axios";
 import api from "../apiClient";
-import { Product } from "@/lib/types/types";
+import { UserProducts } from "@/lib/types/types";
 
-export async function GetUserProducts(): Promise<Product[]> {
+export async function GetUserProducts(): Promise<UserProducts> {
     try{
-        const res = await api.get<Product[]>(`/profile/products`)
+        const res = await api.get<UserProducts>(`/profile/products`)
         return res.data
     }catch(err: unknown){
         const error = err as AxiosError<{message: string}>
