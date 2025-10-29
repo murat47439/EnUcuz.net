@@ -21,8 +21,8 @@ export default function ProfileProductPage(){
     useEffect(()=>{
         const fetchData = async () => {
             try{
-                const data = await GetUserProducts()
-                setProducts(data)
+                const data: UserProducts = await GetUserProducts()
+                setProducts(data.data.products)
             }catch(err){
                 console.error(err)
                 setProducts([])
