@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { api } from "../apiClient"
+import api from "../apiClient";
 import { Message, Brand } from "@/lib/types/types"
 
 export async function UpdateBrand(data: Brand) {

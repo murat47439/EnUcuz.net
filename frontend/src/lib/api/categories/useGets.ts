@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { api } from "../apiClient"
+import api from "../apiClient";
 import { PaginationRequest, CategoriesListResponse } from "@/lib/types/types"
 
 

@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { api } from "../apiClient"
+import api from "../apiClient";
 import { Message, UpdateCategoryRequest } from "@/lib/types/types"
 
 export async function UpdCatData(data: UpdateCategoryRequest) {
