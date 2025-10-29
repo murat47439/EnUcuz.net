@@ -1,5 +1,5 @@
 import axios,{AxiosRequestConfig, AxiosError} from "axios";
-import { logoutUser } from "./user/useLogout";
+import { useAuth } from "@/context/authContext";
 import { refreshToken } from "./user/useAccess";
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -17,7 +17,7 @@ api.interceptors.response.use(
   response => response,
   async (error) => {
     const originalRequest = error.config as AxiosRequestConfigWithRetry;
-
+    const { logout } = useAuth();
     originalRequest._retryCount = originalRequest._retryCount || 0;
 
     if (error.response?.status === 401 && originalRequest._retryCount < 1) {
@@ -27,13 +27,13 @@ api.interceptors.response.use(
         await new Promise(res => setTimeout(res, 1000)); // 1 saniye bekle
         const response = await refreshToken();          // token yenile
         if (!response.success) {
-          logoutUser();
+          logout();
           window.location.href = "/login";
           return Promise.reject(new Error("Token yenilenemedi"));
         }
         return api(originalRequest); // başarılıysa isteği tekrar gönder
       } catch (err: unknown) {
-        logoutUser();
+        logout();
         window.location.href = "/login";
         const axiosErr = err as AxiosError<{ message: string }>;
         return Promise.reject(
