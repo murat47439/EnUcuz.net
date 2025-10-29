@@ -1,4 +1,4 @@
-import { api } from "../apiClient";
+import api from "../apiClient";
 import { IdParam, ReviewsListResponse } from "@/lib/types/types";
 import { AxiosError } from "axios";
 export async function getProductReviews(data: IdParam) {

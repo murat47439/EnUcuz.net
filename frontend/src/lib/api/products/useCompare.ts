@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { api } from "../apiClient";
+import api from "../apiClient";
 import { CompareProductsRequest, ProductDetail } from "@/lib/types/types";
 
 

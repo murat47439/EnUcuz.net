@@ -1,6 +1,6 @@
 "use client"
 import {  useAuth } from "@/context/authContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Input from "@/features/components/input";
 import Button from "@/features/components/button";
@@ -13,6 +13,15 @@ import { registerUser } from "@/lib/api/user/useRegister";
 export default function LoginPage() {
     const router = useRouter()
     
+    useEffect(() => {
+        // localStorage'dan user bilgisi al
+        const user = localStorage.getItem("user");
+        if (user) {
+          router.push("/"); 
+        }
+      }, [router]);
+
+
     const [email,setEmail] = useState('');
     const [name,setName] = useState('');
     const [surname,setSurname] = useState('');

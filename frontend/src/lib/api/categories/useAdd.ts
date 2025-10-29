@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { api } from "../apiClient";
+import api from "../apiClient";
 import { CreateCategoryRequest, CreateCategoryResponse} from "@/lib/types/types";
 
 export async function addCategory(data: CreateCategoryRequest) {

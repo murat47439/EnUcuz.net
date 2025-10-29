@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { api } from "../apiClient";
+import api from "../apiClient";
 import { Message, CreateReviewRequest } from "@/lib/types/types";
 
 export async function addReview(data: CreateReviewRequest) {

@@ -1,6 +1,6 @@
 
 import { AxiosError } from "axios";
-import { api } from "../apiClient";
+import api from "../apiClient";
 import { IdParam } from "@/lib/types/types";
 
 export async function checkChat(data: IdParam): Promise<boolean> {

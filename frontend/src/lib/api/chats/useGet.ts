@@ -1,6 +1,6 @@
 
 import { AxiosError } from "axios";
-import { api } from "../apiClient";
+import api from "../apiClient";
 import { IdParam, ChatMessages } from "@/lib/types/types";
 
 export async function getChat(data: IdParam): Promise<ChatMessages> {

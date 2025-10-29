@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { api } from "../apiClient";
+import api from "../apiClient";
 import { RegisterRequest, RegisterResponse } from "@/lib/types/types";
 
 export async function registerUser(data: RegisterRequest) {
