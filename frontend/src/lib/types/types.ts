@@ -53,6 +53,13 @@ export interface Favorites{
         }
     }
 }
+export interface UserProducts{
+    success: boolean,
+    message: string,
+    data: {
+        Products: Product[],
+    }
+}
 export interface Brand{
     id: number,
     name: string,
