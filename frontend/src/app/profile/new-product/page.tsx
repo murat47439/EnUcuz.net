@@ -1,7 +1,8 @@
 "use client"
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Brand, Category, CategoryAttribute, FeatureKey, Features, Product } from "@/lib/types/types";
+import Image from "next/image";
+import { Brand, Category, CategoryAttribute, FeatureKey, Product } from "@/lib/types/types";
 import { PaginationRequest, IdParam } from "@/lib/types/types";
 import { addProduct } from "@/lib/api/products/useAdd";
 import { getBrands } from "@/lib/api/brands/useGets";
@@ -13,8 +14,6 @@ import dynamic from "next/dynamic";
 const Select = dynamic(() => import("react-select"), { ssr: false });
 import { ImagePlus, FileImage, BadgeCheck,BadgeAlertIcon } from "lucide-react";
 import { useForm, FormProvider, useFieldArray } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 
 type FormData = {
   name: string,
@@ -291,9 +290,11 @@ export default function NewProductPage() {
                     <div className="grid grid-cols-4 gap-4 mt-4">
                       {files.map((file, idx) => (
                         <div key={idx} className="flex flex-col items-center">
-                          <img
+                          <Image
                             src={URL.createObjectURL(file)}
                             alt={file.name}
+                            width={96}
+                            height={96}
                             className="w-24 h-24 object-cover rounded-lg shadow"
                           />
                           <p className="text-center text-gray-600 text-sm">
@@ -339,7 +340,7 @@ export default function NewProductPage() {
                     </h1>
                   ) : (
                     <>
-                      <h1 className="col-span-2 text-center font-extrabold px-2">Özellik Eklemeye Başlamak İçin "Yeni Özellik Ekle" Butonuna Basın</h1>
+                      <h1 className="col-span-2 text-center font-extrabold px-2">Özellik Eklemeye Başlamak İçin &quot;Yeni Özellik Ekle&quot; Butonuna Basın</h1>
 
                       {fields.map((field, index) => (
                         <div key={field.id} className="flex gap-2 items-center p-4 col-span-2 sm:col-span-1">

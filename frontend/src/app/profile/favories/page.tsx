@@ -4,10 +4,10 @@ import { useToast } from "@/context/toastContext";
 import { getFavourites } from "@/lib/api/favorites/useGet";
 
 import ProductCard from "@/features/components/productCard";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { Product } from "@/lib/types/types";
 
-export default function favoritePage(){
+export default function FavoritePage(){
 
     const router = useRouter();
 
@@ -25,7 +25,7 @@ export default function favoritePage(){
         const fetchData = async () =>{
             try{
                 const data = await getFavourites()
-                setProducts(data.data.products)
+                setProducts(data)
             }catch(err){
                 if (err instanceof Error) {
                 setProducts([]);
@@ -36,7 +36,7 @@ export default function favoritePage(){
             }
         }
         fetchData();
-    }, []);
+    }, [showNotification]);
     return (
         <main className="container mx-auto px-4 py-8">
         <h1 className="text-center font-extrabold mb-6 text-xl"> Favori Ürünlerim </h1>

@@ -26,7 +26,7 @@ function HomePageContent() {
       };
       try{
         const data = await getProducts(request);
-        setProducts(data.Products || []);
+        setProducts(data.products || []);
       }catch(err){
         console.error(err)
         setProducts([]);
@@ -45,9 +45,7 @@ function HomePageContent() {
       const offsetTop = productsSection.offsetTop - 100;
       window.scrollTo({
         top: offsetTop,
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest'
+        behavior: 'smooth'
       });
     }
   };
