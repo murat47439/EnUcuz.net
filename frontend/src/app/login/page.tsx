@@ -100,7 +100,7 @@ export default function LoginPage() {
         setResult("Şifre en az 8 karakter olmalı");
         return;
     }
-        const register = await registerUser(request)
+        await registerUser(request)
            setResult('Başarılı')
         }catch(err: unknown){
             if (err instanceof Error){

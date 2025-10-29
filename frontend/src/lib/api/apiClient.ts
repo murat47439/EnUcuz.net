@@ -16,10 +16,11 @@ const api = axios.create({
 
 // === REFRESH TOKEN MEKANİZMASI ===
 let isRefreshing = false;
-let failedQueue: any[] = [];
+type QueueItem = { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void };
+let failedQueue: QueueItem[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
-  failedQueue.forEach(prom => {
+const processQueue = (error: unknown, token: unknown = null) => {
+  failedQueue.forEach((prom) => {
     if (error) prom.reject(error);
     else prom.resolve(token);
   });
