@@ -37,6 +37,7 @@ export interface Product{
     seller_phone?: string,
     features?: Features,
     image_url: string,
+    image_urls: string[],
     category_id: number,
     category_name?: string,
     status?: number,
@@ -51,6 +52,13 @@ export interface Favorites{
         pagination?: { 
             page: number,
         }
+    }
+}
+export interface UserProducts{
+    success: boolean,
+    message: string,
+    data: {
+        products: Product[],
     }
 }
 export interface Brand{
@@ -178,8 +186,8 @@ export interface AddFavoriteRequest{
     id: number
 }
 export interface ProductDetail{    
-data: {Product: Product,
-Attribute: ProductAttribute[]
+data: {product: Product,
+attribute: ProductAttribute[]
 }
     }
 

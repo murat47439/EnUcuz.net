@@ -1,7 +1,7 @@
 "use client"
 import React, {useEffect, useState} from "react"
 import { GetUserProducts } from "@/lib/api/products/useGetUserProducts"
-import { Product } from "@/lib/types/types"
+import { Product,UserProducts } from "@/lib/types/types"
 import ProductCard from "@/features/components/productCard"
 import { useRouter } from "next/navigation";
 export default function ProfileProductPage(){
@@ -21,8 +21,8 @@ export default function ProfileProductPage(){
     useEffect(()=>{
         const fetchData = async () => {
             try{
-                const data = await GetUserProducts()
-                setProducts(data)
+                const data: UserProducts = await GetUserProducts()
+                setProducts(data.data.products)
             }catch(err){
                 console.error(err)
                 setProducts([])
