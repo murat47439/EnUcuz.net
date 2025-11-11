@@ -4,6 +4,7 @@ import { GetUserProducts } from "@/lib/api/products/useGetUserProducts"
 import { Product,UserProducts } from "@/lib/types/types"
 import ProductCard from "@/features/components/productCard"
 import { useRouter } from "next/navigation";
+import { UseModal } from "@/context/modalContext"
 export default function ProfileProductPage(){
 
     const router = useRouter();
@@ -17,7 +18,6 @@ export default function ProfileProductPage(){
   }, [router]);
     
     const [products, setProducts] = useState<Product[]>([])
-
     useEffect(()=>{
         const fetchData = async () => {
             try{
@@ -38,7 +38,7 @@ return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ">
         {products?.map((product)=> (
          
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} edit={true} />
           
         ))}  
       </div>  

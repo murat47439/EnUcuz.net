@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/context/authContext";
 import { ToastProvider } from "@/context/toastContext";
+import ModalProvider from "@/context/modalContext";
 import Header from "@/features/components/header";
 import Footer from "@/features/components/footer";
 import "./globals.css";
@@ -35,6 +36,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-b from-slate-50 via-white to-slate-50`}
       >
         <AuthProvider>
+        <ModalProvider>
         <ToastProvider>
         <Header></Header>
         {/* Decorative background glows */}
@@ -47,6 +49,7 @@ export default function RootLayout({
 
         <Footer></Footer>
         </ToastProvider>
+        </ModalProvider>
         </AuthProvider>
       </body>
     </html>
