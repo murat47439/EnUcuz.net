@@ -296,7 +296,7 @@ export default function ProductUpdatePage({ params }: { params: Promise<{ id: nu
               <TrashIcon className='w-4 h-4' /> Ürünü Sil</Button>
 
             <Button type='button' onClick={() => openModal(
-              <div className='sticky top-0 bg-white z-10 p-2 flex items-center justify-between gap-8'>Kaydetmek istediğinize emin misiniz? 
+              <div className='sticky top-0 bg-white z-10 p-2 flex items-center justify-between gap-8'>Kaydetmek istediğinize emin misiniz?
               <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
               <Button type='button' onClick={closeModal}>Hayır</Button> <Button  type='button' className=' bg-red-600  hover:bg-red-700' onClick={closeModal}>Evet</Button></div>
 
