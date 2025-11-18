@@ -36,8 +36,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-b from-slate-50 via-white to-slate-50`}
       >
         <AuthProvider>
-        <ModalProvider>
         <ToastProvider>
+
+        <ModalProvider>
         <Header></Header>
         {/* Decorative background glows */}
         <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
@@ -48,8 +49,9 @@ export default function RootLayout({
           <main className="pt-28 min-h-screen">{children}</main>
 
         <Footer></Footer>
-        </ToastProvider>
         </ModalProvider>
+        </ToastProvider>
+
         </AuthProvider>
       </body>
     </html>

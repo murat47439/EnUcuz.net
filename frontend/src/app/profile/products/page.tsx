@@ -1,10 +1,9 @@
 "use client"
-import React, {useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import { GetUserProducts } from "@/lib/api/products/useGetUserProducts"
 import { Product,UserProducts } from "@/lib/types/types"
 import ProductCard from "@/features/components/productCard"
 import { useRouter } from "next/navigation";
-import { UseModal } from "@/context/modalContext"
 export default function ProfileProductPage(){
 
     const router = useRouter();
