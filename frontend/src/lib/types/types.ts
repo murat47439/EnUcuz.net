@@ -252,7 +252,8 @@ export interface UpdateProductRequest{
     id : number,
     name: string,
     description: string,
-    price: string,
+    /** Price in cents/kuruş (int64 in backend). Backend expects integer in JSON */
+    price: number,
     stock: number,
 }
 export interface UpdateProductResponse{
@@ -444,7 +445,27 @@ export interface Notification {
     type: NotificationType;
     duration?: number;
 }
-
+export interface AIRequest{
+    text: string;
+}
+export interface AIResponse{
+    success: boolean,
+    message: string,
+    data: {
+        aitext: string,
+    }
+}
 export interface ToastContextType {
     showNotification: (message: string, type: NotificationType, duration?: number) => void;
+}
+export interface UploadImageRequest{
+    image: File
+}
+export interface UploadImageResponse{
+    success: boolean,
+    message: string,
+    data: {
+        url: string,
+        image_id: number
+    }
 }

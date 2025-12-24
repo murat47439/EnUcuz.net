@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import ProductCard from "../productCard"
 import SearchBar from "../searchbar"
 import { PaginationRequest,Product } from "@/lib/types/types"
@@ -8,7 +8,7 @@ import { getProducts } from "@/lib/api/products/useGetProducts"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import Button from "@/features/components/button"
-
+import { ChevronRight, ChevronLeft } from "lucide-react"
 function HomePageContent() {
     const [products, setProducts] = useState<Product[]>([]);
     const searchParams = useSearchParams();
@@ -27,8 +27,12 @@ function HomePageContent() {
       try{
         setResult('API nın başlatılması 30-45 saniye sürebilir lütfen bekleyiniz.');
         const data = await getProducts(request);
-        setProducts(data.products || []);
+        const fetchedProducts = data.products || [];
+        setProducts(fetchedProducts);
+        if (fetchedProducts.length === 0){
         setResult('Ürün bulunamadı.');
+
+        }
       }catch(err){
         setResult('Bir hata oluştu lütfen tekrar deneyiniz.');
         console.error(err)
@@ -52,9 +56,20 @@ function HomePageContent() {
       });
     }
   };
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  }
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
+    }
+  }
 
   return (
-    <main className="container mx-auto max-w-7xl px-4 py-10">
+    <main className="container mx-auto max-w-7xl px-2 sm:px-4 py-6 sm:py-10">
       {/* Hero Section */}
       <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-[1px] shadow-sm">
         <div className="rounded-2xl bg-white/90 backdrop-blur-sm px-6 py-10 text-center">
@@ -77,14 +92,40 @@ function HomePageContent() {
       <p className="text-center text-gray-600 mb-6 mt-8">Aradığınız ürünü satıcılardan uygun fiyata alın!</p>
       <SearchBar onSearchSubmit={handleSearchSubmit} />
       { products?.length >0 ?(
-      <div id="products-section" className="mt-6 rounded-2xl border border-gray-100 bg-white/70 backdrop-blur-sm p-4 sm:p-6 shadow-sm">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ">
-        {products?.map((product)=> (
-          
-          <ProductCard key={product.id} product={product} />
-        ))}  
+      <div className="relative w-full mt-6 -mx-2 sm:mx-0">
+      {/* Sol Buton */}
+      <button
+        onClick={scrollLeft}
+        className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 bg-white shadow-lg p-2 rounded-full z-10 hover:bg-gray-700 hover:text-white transition-colors"
+        aria-label="Sola kaydır"
+      >
+        <ChevronLeft size={20} />
+      </button>
+
+      {/* Sağ Buton */}
+      <button
+        onClick={scrollRight}
+        className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 bg-white shadow-lg p-2 rounded-full z-10 hover:bg-gray-700 hover:text-white transition-colors"
+        aria-label="Sağa kaydır"
+      >
+        <ChevronRight size={20} />
+      </button>
+
+      {/* Kayan Ürün Listesi */}
+      <div
+        ref={scrollRef}
+        className="flex gap-3 sm:gap-4 overflow-x-auto scroll-smooth p-2 sm:p-4 scrollbar-hide"
+      >
+        {products.map(product => (
+          <div
+            key={product.id}
+            className="min-w-[180px] sm:min-w-[220px] md:min-w-[250px] max-w-[180px] sm:max-w-[220px] md:max-w-[250px] flex-shrink-0"
+          >
+            <ProductCard product={product} />
+          </div>
+        ))}
       </div>
-      </div>  
+    </div> 
       ):(<p className="text-center border rounded-2xl p-4 text-gray-600">{result}</p>)
     }
     </main>

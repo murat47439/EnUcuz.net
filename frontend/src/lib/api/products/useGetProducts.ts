@@ -12,10 +12,31 @@ export async function getProducts(data: PaginationRequest) {
         
         
         const res = await api.get<ProductsListResponse>(`/products?${params}`)
+        if (!res.data || !res.data.data) {
+            return { products: [], total: 0, page: 1, limit: 10 };
+        }
         return res.data.data
     }catch(err: unknown){
-        const error = err as AxiosError<{ message: string }>;
-        throw new Error(error?.response?.data?.message || "Ürünler bulunamadı")
+        if (err instanceof Error && 'response' in err) {
+            const axiosError = err as AxiosError<{ message: string }>;
+            console.error("Products fetch error:", axiosError);
+            if (typeof window === "undefined") {
+                throw new Error(axiosError.response?.data?.message || "Ürünler bulunamadı");
+            }
+            return { products: [], total: 0, page: 1, limit: 10 };
+        }
+        if (err instanceof Error) {
+            console.error("Products fetch error:", err);
+            if (typeof window === "undefined") {
+                throw err;
+            }
+            return { products: [], total: 0, page: 1, limit: 10 };
+        }
+        console.error("Products fetch error:", err);
+        if (typeof window === "undefined") {
+            throw new Error("Ürünler bulunamadı");
+        }
+        return { products: [], total: 0, page: 1, limit: 10 };
     }
 }
 

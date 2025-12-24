@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { deleteProduct } from '@/lib/api/products/useDelete'
 import { getProduct } from '@/lib/api/products/useGetProduct'
-import { IdParam, ProductDetail, UpdateProductRequest} from '@/lib/types/types'
+import { IdParam, ProductDetail, UpdateProductRequest, AIRequest} from '@/lib/types/types'
 import { useAuth } from '@/context/authContext'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -15,69 +15,151 @@ import {useToast} from '@/context/toastContext'
 import { deleteProdAttribute } from '@/lib/api/attributes/useDeleteProd'
 import AttributeSelect from '@/features/components/attributeselect'
 import { updateProduct } from '@/lib/api/products/useUpdate'
+import ProductDescription from '@/features/components/UI/productDetail/productDescription'
+import { createDescription } from '@/lib/api/products/useCreateDescription'
 type FormData = {
   name: string,
   description: string,
   price: number,
   stock: number
 }
-export default function ProductUpdatePage({ params }: { params: Promise<{ id: number }> }) {
+export default function ProductUpdatePage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter()
     const [product, setProduct] = useState<ProductDetail>()
+    const [isLoading, setIsLoading] = useState(true)
+    const [productId, setProductId] = useState<string | null>(null)
     const { user } = useAuth()
     const {openModal, closeModal} = UseModal()
     const {showNotification} = useToast();
 
+    // Params'ı resolve et
+    useEffect(() => {
+        params.then((resolved) => {
+            const id = resolved.id;
+            if (!id || isNaN(Number(id))) {
+                console.error("Geçersiz ürün ID:", id);
+                router.push('/profile/products');
+                return;
+            }
+            setProductId(id);
+        }).catch((err) => {
+            console.error("Params resolve hatası:", err);
+            router.push('/profile/products');
+        });
+    }, [params, router]);
 
-   
     const methods = useForm<FormData>({
         defaultValues : {
-            name: product?.data.product.name ,
-            description: product?.data.product.description ,
-            price: product?.data.product.price,
-            stock: product?.data.product.stock 
+            name: product?.data.product.name || "",
+            description: product?.data.product.description || "",
+            price: product?.data.product.price ? Number(product.data.product.price) / 100 : 0,
+            stock: product?.data.product.stock || 1
         }
     })
+    
     useEffect(() => {
       if (product){
           methods.reset({
               name: product.data.product.name,
               description: product.data.product.description,
-              price: product.data.product.price,
+              price: product.data.product.price ? Number(product.data.product.price) / 100 : 0,
               stock: product.data.product.stock
           })
       }
   }, [product, methods])
-    const {register, handleSubmit} = methods;
-    const resolvedParams = React.use(params)
+    
+    const {register, handleSubmit, watch} = methods;
+    
+    // Kullanıcı kontrolü
     useEffect(() => {
-
-        const user = localStorage.getItem("user"); 
-        if (!user) {
+        const storedUser = localStorage.getItem("user"); 
+        if (!storedUser) {
           router.push("/login"); 
+          return;
         }
-      }, [router]);
-    // Ürünü getir
+    }, [router]);
+
+    // Ürünü getir - user ve productId yüklendikten sonra
     useEffect(() => {
+        if (!productId) return;
+
         const fetchData = async () => {
-            const request: IdParam = { id: Number(resolvedParams.id) }
+            // User kontrolü
+            const storedUser = localStorage.getItem("user");
+            if (!storedUser) {
+                setIsLoading(false);
+                router.push("/login");
+                return;
+            }
+
+            let currentUser;
             try {
-                const data = await getProduct(request)
-                if (user?.id == data.data.product.seller_id){
-                    setProduct(data)
-                }else{
-                    router.push('/404')   
+                currentUser = JSON.parse(storedUser);
+            } catch (err) {
+                console.error("User parse hatası:", err);
+                router.push("/login");
+                return;
+            }
+
+            // ID kontrolü
+            const id = Number(productId);
+            if (!id || isNaN(id) || id <= 0) {
+                console.error("Geçersiz ürün ID:", productId);
+                setIsLoading(false);
+                router.push('/profile/products');
+                return;
+            }
+
+            const request: IdParam = { id };
+            
+            try {
+                setIsLoading(true);
+                const data = await getProduct(request);
+                
+                // Product kontrolü
+                if (!data || !data.data || !data.data.product) {
+                    console.error("Ürün verisi bulunamadı");
+                    setIsLoading(false);
+                    router.push('/profile/products');
+                    return;
+                }
+                
+                // User context'ten gelmemişse localStorage'dan kontrol et
+                const userId = user?.id || currentUser?.id;
+                
+                if (!userId) {
+                    console.error("User ID bulunamadı");
+                    setIsLoading(false);
+                    router.push("/login");
+                    return;
+                }
+                
+                // Seller kontrolü
+                if (Number(userId) === Number(data.data.product.seller_id)) {
+                    setProduct(data);
+                } else {
+                    console.warn("Kullanıcı bu ürünün sahibi değil. User ID:", userId, "Seller ID:", data.data.product.seller_id);
+                    setIsLoading(false);
+                    router.push('/profile/products');
                 }
             } catch (err) {
-                console.error(err)
-                router.push('/404')
+                console.error("Ürün getirme hatası:", err);
+                setIsLoading(false);
+                // Hata mesajını göster
+                if (err instanceof Error) {
+                    showNotification(err.message || "Ürün yüklenirken bir hata oluştu", 'error', 3000);
+                }
+                router.push('/profile/products');
+            } finally {
+                setIsLoading(false);
             }
         }
         fetchData()
-    }, [resolvedParams, router,user])
+    }, [productId, router, user, showNotification])
 
     const handleDelete = async () => {
-        const request: IdParam = { id: Number(resolvedParams.id) }
+        if (!productId) return;
+        const request: IdParam = { id: Number(productId) }
         try {
             const data = await deleteProduct(request)
             showNotification('Ürün başarıyla silindi. Yönlendiriliyorsunuz...', 'success', 4000)
@@ -88,6 +170,9 @@ export default function ProductUpdatePage({ params }: { params: Promise<{ id: nu
           }
         } catch (err) {
             console.error(err)
+            if (err instanceof Error) {
+                showNotification(err.message || "Ürün silinirken bir hata oluştu", 'error', 3000);
+            }
         }
     }
     const handleDeleteAttribute = async (attributeId: number) => {
@@ -105,17 +190,28 @@ export default function ProductUpdatePage({ params }: { params: Promise<{ id: nu
         }
     }
     const onsubmit = async (data: FormData) => {
+      if (!productId) {
+        showNotification('Ürün ID bulunamadı.', 'error', 2000);
+        return;
+      }
+      
+      // Kullanıcıdan gelen price TL cinsinden, API'ye cent (int64) olarak gönderiyoruz
+      // Backend: UpdProduct.Price int64 - JSON'da integer olarak gönderilmeli
+      const priceInCents = Math.round(data.price * 100);
       const request: UpdateProductRequest = {
-        id: Number(resolvedParams.id),
+        id: Number(productId),
         name: data.name,
         description: data.description,
-        price: data.price.toString(),
+        price: priceInCents, // Backend int64 bekliyor, number olarak gönder
         stock: data.stock
       }
-      if (data.name == "" || data.description == "" || data.price == 0 || data.stock == 0) {showNotification('Lütfen tüm alanları doldurun.', 'error', 2000); return;}
+      if (data.name == "" || data.description == "" || data.price == 0 || data.stock == 0) {
+        showNotification('Lütfen tüm alanları doldurun.', 'error', 2000); 
+        return;
+      }
       try{
-        const data = await updateProduct(request)
-        if (data.success){
+        const response = await updateProduct(request)
+        if (response.success){
           showNotification('Ürün başarıyla güncellendi.', 'success', 2000)
           setTimeout(() => {
             router.refresh()
@@ -123,28 +219,83 @@ export default function ProductUpdatePage({ params }: { params: Promise<{ id: nu
         }
       }catch(err){
         console.error(err)
-        showNotification('Ürün güncellenemedi.', 'error', 2000)
+        if (err instanceof Error) {
+          showNotification(err.message || 'Ürün güncellenemedi.', 'error', 2000)
+        } else {
+          showNotification('Ürün güncellenemedi.', 'error', 2000)
+        }
       }
     }
+    if (isLoading || !product) {
+        return (
+            <div className="max-w-6xl mx-auto p-6 md:p-8 bg-white rounded-2xl shadow-xl border border-gray-100 mt-6 md:mt-10">
+                <div className="flex items-center justify-center min-h-[400px]">
+                    <p className="text-gray-500">Yükleniyor...</p>
+                </div>
+            </div>
+        )
+    }
+    const handleAIGenerate = async () => {
+      showNotification('Oluşturuluyor', 'info', 10000)
+      try{
+        const res : AIRequest = {
+          text: watch("description")
+        }
+        const data = await createDescription(res)
+        methods.setValue("description", data.data.aitext) 
+      showNotification('Başarıyla oluşturuldu', 'success', 2000)
+
+      }catch(err){
+        console.error(err);
+      }
+      
+    } 
+
     return (
-        <form onSubmit={handleSubmit(onsubmit)} className="max-w-6xl mx-auto p-6 md:p-8 bg-white  rounded-2xl shadow-xl border border-gray-100  mt-6 md:mt-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-          <div className="flex flex-col items-center space-y-6">
-            <div className="w-full aspect-square relative rounded-2xl overflow-hidden shadow-2xl border-2 border-gray-200  bg-gradient-to-br from-gray-50 to-gray-100   group">
+        <form onSubmit={handleSubmit(onsubmit)} className="max-w-6xl mx-auto p-4 sm:p-6 md:p-8 bg-white  rounded-2xl shadow-xl border border-gray-100  mt-6 md:mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 lg:gap-12">
+          <div className="w-full">
+            <div className="w-full aspect-square relative rounded-2xl overflow-hidden shadow-2xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 group">
               <Image
                 src={product?.data.product.image_url ? product.data.product.image_url : "/placeholder.png"}
-
-
                 alt={product?.data.product.name ?? "Ürün Görseli"}
                 fill
-                className="object-contain p-6 transition-transform duration-300 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 600px"
+                className="object-contain p-4 md:p-6 transition-transform duration-300 group-hover:scale-105"
                 priority
-                
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+            </div> 
+            <Button type='button' className='w-full ml-0 md:ml-2 flex items-center justify-center text-sm mt-4 '  onClick={() => openModal( 
+() => (
+<div className='flex flex-col gap-2'>
+      <h2 className="text-xl font-semibold mb-2">Ürün Adı ve Açıklama</h2>
+      <Input type="text" placeholder="Ürün Adı" {...register("name")} />
+      <Input as="textarea" placeholder="Ürün Açıklama" {...register("description")} />
+      
+      <div className="flex gap-2 mt-2">
+        <Button type='button' onClick={handleAIGenerate} variant='secondary' className='bg-gradient-to-r from-blue-700 to-cyan-500 text-white 
+    font-semibold 
+    rounded-lg hover:from-blue-800 hover:to-cyan-600 
+    hover:shadow-xl 
+    hover:scale-[1.02] transition-all duration-300 px-4 py-2' >
+          AI ile Üret (HTML)
+        </Button>
+        <Button type='button' onClick={closeModal}>Kaydet</Button>
+      </div>
+    </div>)
+)}> <PencilIcon className='w-4 h-4'></PencilIcon><p className='ml-2 text-xs sm:text-sm'>Ürün adını ve açıklamasını düzenle</p></Button>
+          </div>
   
-            <div className="w-full">
+
+          <div className="flex flex-col justify-between space-y-4 md:space-y-6 w-full">
+            <div className="space-y-4">
+              <div>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 text-gray-900  leading-tight text-center md:text-left">
+                  {product?.data.product.name ?? "Ürün Adı"}
+                </h1>
+              </div>
+              <div className="w-full">
               <h3 className="text-sm font-semibold text-gray-700  mb-3 text-center">
                 Ek Görseller
               </h3>
@@ -162,7 +313,6 @@ export default function ProductUpdatePage({ params }: { params: Promise<{ id: nu
                         onClick={() =>
                             openModal(
                               <div className="flex flex-col items-center justify-center">
-                                <h2 className="text-xl font-semibold mb-2">Ürün Resmi</h2>
                                 <div className="relative overflow-hidden group">
                                     <Image
                                         src={img}
@@ -193,30 +343,8 @@ export default function ProductUpdatePage({ params }: { params: Promise<{ id: nu
                 )}
               </div>
             </div>
-          </div>
-  
-
-          <div className="flex flex-col justify-between space-y-6">
-            <div className="space-y-4">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold mb-3 text-gray-900  leading-tight">
-                  {product?.data.product.name ?? "Ürün Adı"}
-                </h1>
-              </div>
-              <div className="bg-gray-50  rounded-xl p-4 md:p-6 border border-gray-200 ">
-                <p className="text-gray-600  leading-relaxed text-sm md:text-base">
-                  {product?.data.product.description ?? "Bu ürün için açıklama bulunmamaktadır."}
-                </p>
-              </div>
-              <Button type='button' className=' ml-2  flex items-center justify-center text-sm' onClick={() => openModal(
-
-                <div className='flex flex-col gap-2'>
-                  <h2 className="text-xl font-semibold mb-2">Ürün Adı ve Açıklama</h2>
-                  <Input type="text" placeholder="Ürün Adı"  {...register("name")} />
-                  <Input as="textarea" placeholder="Ürün Açıklama"  {...register("description")}/>
-                  <Button type='button' onClick={closeModal}>Kaydet</Button>
-                </div>
-              )}> <PencilIcon></PencilIcon><p className='ml-2'>Ürün adını ve açıklamasını düzenle</p></Button>
+              
+              
 
             </div>
 
@@ -262,13 +390,22 @@ export default function ProductUpdatePage({ params }: { params: Promise<{ id: nu
                           </div>
                         </div>
                       </div>
-                      <Button type='button' className='w-full mt-4' onClick={() => openModal( <div className='sticky top-0 bg-white z-10 p-2 flex items-center justify-between gap-8'>Ürünü silmek istediğinize emin misiniz? <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'> <Button type='button' onClick={closeModal}>Hayır</Button> <Button className=' bg-red-600 hover:bg-red-700'onClick={() => { handleDeleteAttribute(attr.id); closeModal(); }}>Evet</Button></div> </div> )}> Sil</Button>
+                      <Button type='button' className='w-full mt-4' onClick={() => openModal( 
+                        <div className='flex flex-col gap-4'>
+                          <h2 className='text-lg font-semibold text-gray-800'>Özellik Sil</h2>
+                          <p className='text-gray-600'>Bu özelliği silmek istediğinize emin misiniz?</p>
+                          <div className='flex flex-row gap-3 mt-2'>
+                            <Button type='button' onClick={closeModal} className='flex-1'>Hayır</Button>
+                            <Button className='flex-1 bg-red-600 hover:bg-red-700' onClick={() => { handleDeleteAttribute(attr.id); closeModal(); }}>Evet</Button>
+                          </div>
+                        </div>
+                      )}> Sil</Button>
                     </div>
                   ))}
                   
                 </div>
-                <div className='absolute bottom-0 right-0 w-48 '>
-                <Button type='button'  onClick={() => openModal(
+                <div className='mt-4 flex justify-end md:absolute md:bottom-0 md:right-0 w-full md:w-48'>
+                <Button type='button' className='w-full md:w-auto' onClick={() => openModal(
             
             product?.data.product && (<AttributeSelect data={product.data.product}></AttributeSelect>)
             )}>Özellik Ekle</Button>
@@ -307,11 +444,29 @@ export default function ProductUpdatePage({ params }: { params: Promise<{ id: nu
                     Fiyat (₺)
                   </label>
                   <Input
-                  {...register("price")}
+                  {...register("price", {
+                    valueAsNumber: true,
+                    required: "Fiyat zorunludur",
+                    min: {
+                      value: 0.01,
+                      message: "Fiyat 0.01'den küçük olamaz"
+                    },
+                    validate: (value) => {
+                      if (value == null || value <= 0) {
+                        return "Fiyat pozitif bir sayı olmalıdır";
+                      }
+                      // En fazla 2 ondalık hane kontrolü
+                      const decimalPlaces = (value.toString().split('.')[1] || '').length;
+                      if (decimalPlaces > 2) {
+                        return "Fiyat en fazla 2 ondalık haneli olabilir";
+                      }
+                      return true;
+                    }
+                  })}
                     type="number"
-                     step="0.01"
-                  
-                    className="w-full border-2 border-gray-200  rounded-lg px-4 py-2.5 bg-white  text-gray-900  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    step="0.01"
+                    min="0.01"
+                    className="w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
   
@@ -353,34 +508,48 @@ export default function ProductUpdatePage({ params }: { params: Promise<{ id: nu
                 </div>
               </div>
             </div>
-  
+            
             {/* Kaydet Butonu */}
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
             <Button type='button' onClick={()=> openModal(
-              <div className='sticky top-0 bg-white z-10 p-2 flex items-center justify-between gap-8'>Ürünü silmek istediğinize emin misiniz? 
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                <Button type='button' onClick={closeModal}>Hayır</Button> <Button className=' bg-red-600  hover:bg-red-700'onClick={() => {
+              <div className='flex flex-col gap-4'>
+                <h2 className='text-lg font-semibold text-gray-800'>Ürün Sil</h2>
+                <p className='text-gray-600'>Bu ürünü silmek istediğinize emin misiniz? Bu işlem geri alınamaz.</p>
+                <div className='flex flex-row gap-3 mt-2'>
+                  <Button type='button' onClick={closeModal} className='flex-1'>Hayır</Button>
+                  <Button className='flex-1 bg-red-600 hover:bg-red-700' onClick={() => {
                 handleDelete();
                 closeModal();
-              }}>Evet</Button></div>
-
+                  }}>Evet</Button>
+                </div>
                 </div>
             )} className="flex items-center justify-center gap-8 mt-4 w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3.5 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 text-base"> 
               <TrashIcon className='w-4 h-4' /> Ürünü Sil</Button>
 
             <Button type='button' onClick={() => openModal(
-              <div className='sticky top-0 bg-white z-10 p-2 flex items-center justify-between gap-8'>Kaydetmek istediğinize emin misiniz?
-              <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-              <Button type='button' onClick={closeModal}>Hayır</Button> <Button  type='button' onClick={handleSubmit(async (data) => {
+              <div className='flex flex-col gap-4'>
+                <h2 className='text-lg font-semibold text-gray-800'>Değişiklikleri Kaydet</h2>
+                <p className='text-gray-600'>Yaptığınız değişiklikleri kaydetmek istediğinize emin misiniz?</p>
+                <div className='flex flex-row gap-3 mt-2'>
+                  <Button type='button' onClick={closeModal} className='flex-1'>Hayır</Button>
+                  <Button type='button' onClick={handleSubmit(async (data) => {
     await onsubmit(data)
     closeModal()
-})} className=' bg-red-600  hover:bg-red-700'>Evet</Button></div>
+                  })} className='flex-1 bg-blue-600 hover:bg-blue-700'>Evet</Button>
+                </div>
               </div>
             )} className="mt-4 w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3.5 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 text-base">
               Değişiklikleri Kaydet
             </Button>
             </div>
             
+          </div>
+          
+          <div className="w-full md:col-span-2">
+            <h1 className='w-full text-center font-extrabold text-xl mb-4'>Ürün Açıklaması</h1>
+            <div className="bg-gray-50  rounded-xl p-4 md:p-6 border border-gray-200">
+              <ProductDescription description={product?.data.product.description} />
+            </div>
           </div>
         </div>
       </form>
